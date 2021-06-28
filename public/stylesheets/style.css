@@ -1,8 +1,24 @@
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+}
+
+.btn-search {
+  margin-top: 20px;
+}
+.btn-reset {
+  margin-top: 20px;
+  margin-left: 15px;
+}
+
+.form-group{
+  margin-bottom: 20px;
+}
+
+.form-control{
+  margin-top: 10px;
 }
