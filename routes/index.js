@@ -6,13 +6,7 @@ const saltRounds = 10;
 const helpers = require("../helpers/util");
 
 module.exports = function (db) {
-  router.get("/", helpers.isLoggedIn, function (req, res, next) {
-    res.render("index", { title: "Express" });
-  });
 
-  router.get("/projects", helpers.isLoggedIn, (req, res) => {
-    res.render("projects");
-  });
 
   router.get("/login", (req, res) => {
     res.render("login", {info: req.flash('info')});
@@ -49,14 +43,14 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/register", helpers.isLoggedIn, (req, res) => {
+  router.get("/register", (req, res) => {
     res.render("register");
   });
 
-  router.post("/register", helpers.isLoggedIn, (req, res) => {
+  router.post("/register", (req, res) => {
     bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
       db.query(
-        `insert into users(email, password, firstname, lastname) values($1, $2, $3, $4)`,
+        `insert into users(email, password, firstname, lastname, isfulltime, isparttime, position, role) values($1, $2, $3, $4, true, false, 'Programmer', 'ADMIN')`,
         [req.body.email, hash, req.body.firstname, req.body.lastname],
         (err, data) => {
           res.redirect("/login");

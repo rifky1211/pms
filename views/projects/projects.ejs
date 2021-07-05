@@ -1,0 +1,167 @@
+<%- include('../partials/header') %>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Project Management System</a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarNav"
+    aria-controls="navbarNav"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/projects"
+          >Projects <span class="sr-only">(current)</span></a
+        >
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/profile">Profile</a>
+      </li>
+    </ul>
+    <a
+      href="/logout"
+      class="btn btn-outline-success my-2 my-sm-0 d-flex justify-content-end"
+      >Logout</a
+    >
+  </div>
+</nav>
+<br />
+<h1>Projects</h1>
+<br />
+<h3>Filter</h3>
+<form class="form-horizontal" action="" method="get">
+  <input type="hidden" name="page" value="1" />
+
+  <div class="form-group">
+    <input
+      type="checkbox"
+      id="checkString"
+      onclick="myFunction1()"
+      name="checkString"
+    />
+    <label class="control-label col-sm-2" for="string">ID :</label>
+    <div class="col-sm-4">
+      <input
+        type="number"
+        class="form-control"
+        id="id"
+        name="id"
+        placeholder="ID"
+      />
+    </div>
+  </div>
+  <div class="form-group">
+    <input type="checkbox" id="checkAngka" onclick="myFunction2()" />
+    <label class="control-label col-sm-2" for="integer">Name :</label>
+    <div class="col-sm-4">
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        name="name"
+        placeholder="Enter Integer..."
+      />
+    </div>
+  </div>
+  <div class="form-group">
+    <input type="checkbox" id="checkBoolean" onclick="myFunction5()" />
+    <label for="member" class="control-label col-sm-2">Member :</label>
+    <div class="col-sm-2">
+      <select name="member" id="member" class="custom-select col-sm-10">
+        <option value="">Find Member ...</option>
+        <option value="true">True</option>
+        <option value="false">False</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-primary btn-search">Find</button>
+      <a href="/projects" class="btn btn-warning btn-reset">Reset</a>
+    </div>
+  </div>
+</form>
+
+<form action="" class="form-horizontal" method="post">
+  <div class="options">
+    <h3>Options</h3>
+  </div>
+  <div class="d-flex">
+    <div class="p-2">Columns</div>
+    <div class="p-2 option-checkbox">
+      <div class="custom-control custom-checkbox">
+        <input
+          name="id-option"
+          type="checkbox"
+          class="custom-control-input"
+          id="id-option"
+          onclick="option()"
+        />
+        <label class="custom-control-label" for="id-option">ID</label>
+      </div>
+      <div class="custom-control custom-checkbox">
+        <input
+          name="name-option"
+          type="checkbox"
+          class="custom-control-input"
+          id="name-option"
+        />
+        <label class="custom-control-label" for="name-option">Name</label>
+      </div>
+      <div class="custom-control custom-checkbox">
+        <input
+          name="members-option"
+          type="checkbox"
+          class="custom-control-input"
+          id="members-option"
+        />
+        <label class="custom-control-label" for="members-option">Members</label>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-primary" type="submit">Apply</button>
+</form>
+
+<div class="table-data">
+  <table class="table table-striped">
+    <tr>
+      <th class="id-data">#</th>
+      <th class="name-head">Name</th>
+      <th class="member-head">Member</th>
+      <th>Action</th>
+    </tr>
+    <tr>
+      <% data.forEach((item, index) => { %>
+      <td class="id-data"><%= index + 1 %></td>
+      <td class="name-data"><%= item.name %></td>
+      <td class="member-data"><%= item.firstname %></td>
+      <td>
+        <a href="#" class="btn btn-success">Edit</a>
+        <a href="#" class="btn btn-danger">Delete</a>
+      </td>
+    </tr>
+    <% }) %>
+  </table>
+</div>
+<script>
+  function option() {
+    const id = document.getElementById("id-option");
+    const idData = document.getElementsByClassName("id-data")
+    for (let i = 0; i < idData.length; i++) {
+      if (id.checked == true) {
+        idData[i].style.display = "block";
+        idData[i].style.display = "block";
+      } else {
+        idData[i].style.display = "none";
+        idData[i].style.display = "none";
+      }
+    }
+  }
+</script>
+<%- include('../partials/footer') %>

@@ -22,3 +22,30 @@ a {
 .form-control{
   margin-top: 10px;
 }
+
+.option-checkbox{
+  margin-left: 50px;
+}
+
+.table-data{
+  margin-top: 30px;
+}
+
+.id-head{
+  display: none;
+}
+.id-data{
+  display: none;
+}
+.name-head{
+  display: none;
+}
+.name-data{
+  display: none;
+}
+.member-head{
+  display: none;
+}
+.member-data{
+  display: none;
+}
