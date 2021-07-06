@@ -8,7 +8,7 @@ const helpers = require("../helpers/util");
 module.exports = function (db) {
 
   router.get('/', (req, res) => {
-    res.redirect('/projects/?page=1')
+    res.redirect('/projects')
   })
 
   router.get("/login", (req, res) => {
