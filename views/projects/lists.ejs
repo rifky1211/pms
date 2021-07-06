@@ -41,42 +41,45 @@
   <div class="form-group">
     <input
       type="checkbox"
-      id="checkString"
-      onclick="myFunction1()"
-      name="checkString"
+      id="checkId"
+      onclick="check()"
+      <%= findId ? ' checked' : '' %> 
     />
     <label class="control-label col-sm-2" for="string">ID :</label>
     <div class="col-sm-4">
       <input
         type="number"
         class="form-control"
-        id="id"
-        name="id"
-        placeholder="ID"
+        name="findId"
+        id="findId"
+        value="<%= findId %>"
+        <%= findId ? '' : ' disabled' %> 
       />
     </div>
   </div>
   <div class="form-group">
-    <input type="checkbox" id="checkAngka" onclick="myFunction2()" />
+    <input type="checkbox" id="checkName" onclick="check()" <%= findName ? ' checked' : '' %>/>
     <label class="control-label col-sm-2" for="integer">Name :</label>
     <div class="col-sm-4">
       <input
         type="text"
         class="form-control"
-        id="name"
-        name="name"
-        placeholder="Enter Integer..."
+        name="findName"
+        id="findName"
+        value="<%= findName %> "
+        <%= findName ? '' : ' disabled' %> 
       />
     </div>
   </div>
   <div class="form-group">
-    <input type="checkbox" id="checkBoolean" onclick="myFunction5()" />
+    <input type="checkbox" id="checkMembers" onclick="check()"<%= findMember ? ' checked' : '' %>/>
     <label for="member" class="control-label col-sm-2">Member :</label>
     <div class="col-sm-2">
-      <select name="member" id="member" class="custom-select col-sm-10">
+      <select name="findMember" id="findMember" class="custom-select col-sm-10" <%= findMember ? '' : ' disabled' %> >
         <option value="">Find Member ...</option>
-        <option value="true">True</option>
-        <option value="false">False</option>
+        <% names.forEach(item => { %> 
+        <option value="<%= item.userid %>" <%= findMember == item.userid ? ' selected' : '' %> ><%= item.firstname %> </option>
+        <% }) %> 
       </select>
     </div>
   </div>
@@ -88,7 +91,7 @@
   </div>
 </form>
 
-<form action="" class="form-horizontal" method="post">
+<form action="/projects" class="form-horizontal" method="post">
   <div class="options">
     <h3>Options</h3>
   </div>
@@ -96,30 +99,27 @@
     <div class="p-2">Columns</div>
     <div class="p-2 option-checkbox">
       <div class="custom-control custom-checkbox">
-        <input
-          name="id-option"
-          type="checkbox"
-          class="custom-control-input"
-          id="id-option"
-          onclick="option()"
-        />
+        <input name="projectid" type="checkbox" class="custom-control-input"
+        id="id-option" <%= options["projectid"] ? ' checked' : '' %>/>
         <label class="custom-control-label" for="id-option">ID</label>
       </div>
       <div class="custom-control custom-checkbox">
         <input
-          name="name-option"
+          name="name"
           type="checkbox"
           class="custom-control-input"
           id="name-option"
+          <%= options["name"] ? ' checked' : '' %>
         />
         <label class="custom-control-label" for="name-option">Name</label>
       </div>
       <div class="custom-control custom-checkbox">
         <input
-          name="members-option"
+          name="members"
           type="checkbox"
           class="custom-control-input"
           id="members-option"
+          <%= options["members"] ? ' checked' : '' %>
         />
         <label class="custom-control-label" for="members-option">Members</label>
       </div>
@@ -131,16 +131,28 @@
 <div class="table-data">
   <table class="table table-striped">
     <tr>
+      <% if(options["projectid"]){ %>
       <th class="id-data">#</th>
+      <% } %> 
+      <% if(options["name"]){ %>
       <th class="name-head">Name</th>
+      <% } %>
+       <% if(options["members"]){ %>
       <th class="member-head">Member</th>
+      <% } %>
+
       <th>Action</th>
     </tr>
     <tr>
-      <% data.forEach((item, index) => { %>
-      <td class="id-data"><%= index + 1 %></td>
+      <% data.forEach((item, index) => { %> <% if(options["projectid"]){ %>
+      <td class="id-data">
+        <a href="#"><%= item.projectid %></a>
+      </td>
+      <% } %> <% if(options["name"]){ %>
       <td class="name-data"><%= item.name %></td>
-      <td class="member-data"><%= item.firstname %></td>
+      <% } %> <% if(options["members"]){ %>
+      <td class="member-data"><%= item.members %></td>
+      <% } %>
       <td>
         <a href="#" class="btn btn-success">Edit</a>
         <a href="#" class="btn btn-danger">Delete</a>
@@ -149,18 +161,40 @@
     <% }) %>
   </table>
 </div>
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    <li class="page-item <%= page > 1 ? '' : 'disabled' %> ">
+      <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${page - 1}`)%>">Previous</a>
+    </li>
+    <% for(let i = 1; i <= jumlahHalaman; i++){ %> 
+    <li class="page-item <%= page == i ? 'active' : '' %> "><a class="page-link" href="/projects<%= url.replace(`page=${page}`, `page=${i}`) %>"><%= i %> </a></li>
+    <% } %> 
+    <li class="page-item <%= page < jumlahHalaman ? '' : 'disabled' %> ">
+      <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${page + 1}`)%>">Next</a>
+    </li>
+  </ul>
+</nav>
 <script>
-  function option() {
-    const id = document.getElementById("id-option");
-    const idData = document.getElementsByClassName("id-data")
-    for (let i = 0; i < idData.length; i++) {
-      if (id.checked == true) {
-        idData[i].style.display = "block";
-        idData[i].style.display = "block";
-      } else {
-        idData[i].style.display = "none";
-        idData[i].style.display = "none";
-      }
+  function check(){
+    const checkId = document.getElementById("checkId")
+    const checkName = document.getElementById("checkName")
+    const checkMembers = document.getElementById("checkMembers")
+
+    if(checkId.checked == true){
+      document.getElementById("findId").disabled = false
+    }else {
+      document.getElementById("findId").disabled = true
+    }
+    if(checkName.checked == true){
+      document.getElementById("findName").disabled = false
+    }else {
+      document.getElementById("findName").disabled = true
+    }
+    if(checkMembers.checked == true){
+      document.getElementById("findMember").disabled = false
+    }else{
+      document.getElementById("findMember").disabled = true
+      
     }
   }
 </script>

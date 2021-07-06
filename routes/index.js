@@ -7,6 +7,9 @@ const helpers = require("../helpers/util");
 
 module.exports = function (db) {
 
+  router.get('/', (req, res) => {
+    res.redirect('/projects/?page=1')
+  })
 
   router.get("/login", (req, res) => {
     res.render("login", {info: req.flash('info')});
