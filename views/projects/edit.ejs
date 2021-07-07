@@ -1,0 +1,35 @@
+<%- include('../partials/header') %>
+
+<h1>Add Member to Project</h1>
+
+<form action="" class="form-horizontal" method="POST">
+  <div class="d-flex">
+    <div class="p-2">Name Members</div>
+    <div class="p-2 option-checkbox">
+      <% data.forEach(item => { %>
+        <% for(let i = 0; i < item.members.length; i++){ %> 
+      <div class="custom-control custom-checkbox">
+        <input
+          name="userid"
+          type="checkbox"
+          class="custom-control-input"
+          id="<%= item.members[i] %>"
+          value="<%= item.userid %>"
+          checked
+        />
+        <label class="custom-control-label" for="<%= item.members[i] %>"><%= item.members[i] %></label>
+    </div>
+    <% } %> 
+      <% }) %>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="name" class="control-label sm-2">Name Project</label>
+    <div class="col-sm-4">
+      <input type="text" class="form-control" value="<%= data[0].name %>" />
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Add</button>
+</form>
+
+<%- include('../partials/footer') %>

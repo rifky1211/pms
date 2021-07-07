@@ -66,7 +66,7 @@
         class="form-control"
         name="findName"
         id="findName"
-        value="<%= findName %> "
+        value="<%= findName %>"
         <%= findName ? '' : ' disabled' %> 
       />
     </div>
@@ -78,7 +78,7 @@
       <select name="findMember" id="findMember" class="custom-select col-sm-10" <%= findMember ? '' : ' disabled' %> >
         <option value="">Find Member ...</option>
         <% names.forEach(item => { %> 
-        <option value="<%= item.userid %>" <%= findMember == item.userid ? ' selected' : '' %> ><%= item.firstname %> </option>
+        <option value="<%= item.userid %>" <%= findMember == item.userid ? ' selected' : '' %>><%= item.firstname %></option>
         <% }) %> 
       </select>
     </div>
@@ -154,26 +154,36 @@
       <td class="member-data"><%= item.members %></td>
       <% } %>
       <td>
-        <a href="#" class="btn btn-success">Edit</a>
-        <a href="#" class="btn btn-danger">Delete</a>
+        <a href="/projects/edit/<%= item.projectid %>" class="btn btn-success">Edit</a>
+        <a href="/projects/delete/<%= item.projectid %>" class="btn btn-danger">Delete</a>
       </td>
     </tr>
     <% }) %>
   </table>
 </div>
-<nav aria-label="Page navigation example">
-  <ul class="pagination justify-content-center">
-    <li class="page-item <%= page > 1 ? '' : 'disabled' %> ">
-      <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${page - 1}`)%>">Previous</a>
-    </li>
-    <% for(let i = 1; i <= jumlahHalaman; i++){ %> 
-    <li class="page-item <%= page == i ? 'active' : '' %> "><a class="page-link" href="<%= findId || findName || findMember ? '/projects' : '' %><%= url.replace(`page=${page}`, `page=${i}`) %>"><%= i %> </a></li>
-    <% } %> 
-    <li class="page-item <%= page < jumlahHalaman ? '' : 'disabled' %> ">
-      <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${page + 1}`)%>">Next</a>
-    </li>
-  </ul>
-</nav>
+
+  <div>
+    <a href="/projects/form" class="btn btn-primary">Add Member to Project</a>
+    <a href="/projects/add-project" class="btn btn-secondary">Add Project</a>
+  </div>
+  <div class="justify-content-center">
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        <li class="page-item <%= page > 1 ? '' : 'disabled' %> ">
+          <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${page - 1}`)%>">Previous</a>
+        </li>
+        <% for(let i = 1; i <= jumlahHalaman; i++){ %> 
+        <li class="page-item <%= page == i ? 'active' : '' %> "><a class="page-link" href="<%= findId || findName || findMember ? '/projects' : '' %><%= url.replace(`page=${page}`, `page=${i}`) %>"><%= i %> </a></li>
+        <% } %> 
+        <li class="page-item <%= page < jumlahHalaman ? '' : 'disabled' %> ">
+          <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${page + 1}`)%>">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+
+
 <script>
   function check(){
     const checkId = document.getElementById("checkId")

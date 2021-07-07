@@ -1,0 +1,42 @@
+<%- include('../partials/header') %>
+
+<h1>Add Member to Project</h1>
+
+<form action="" class="form-horizontal" method="POST">
+  <div class="form-group">
+    <label for="name" class="control-label sm-2">Name</label>
+    <div class="col-sm-4">
+      <select name="userid" id="userid" class="custom-select col-sm-10">
+        <option value="">Choose User</option>
+        <% users.forEach(item => { %> 
+        <option value="<%= item.userid %> "><%= item.firstname %> </option>
+        <% }) %> 
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="role" class="control-label sm-2">Role</label>
+    <div class="col-sm-4">
+      <select name="role" id="role" class="custom-select col-sm-10">
+        <option value="">Choose User ...</option>
+        <option value="Programmer">Programmer</option>
+        <option value="Quality Assurance">Quality Assurance</option>
+        <option value="Manager">Manager</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="projectid" class="control-label sm-2">Project</label>
+    <div class="col-sm-4">
+      <select name="projectid" id="projectid" class="custom-select col-sm-10">
+        <option value="">Choose Project</option>
+        <% projects.forEach(item => { %> 
+        <option value="<%= item.projectid %> "><%= item.name %> </option>
+        <% }) %> 
+      </select>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Add</button>
+</form>
+
+<%- include('../partials/footer') %>
