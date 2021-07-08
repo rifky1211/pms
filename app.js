@@ -29,7 +29,11 @@ if(isDevelompent){
 }else{
   pool = new Pool(productionDB)
 }
-
+console.log(pool)
+pool.query('SELECT NOW()', (err, res) => {
+  console.log(err, res)
+  pool.end()
+})
 var indexRouter = require('./routes/index')(pool);
 var usersRouter = require('./routes/users');
 var projectsRouter = require('./routes/projects')(pool);
