@@ -9,7 +9,7 @@ module.exports = function (db) {
   router.get("/", helpers.isLoggedIn, (req, res) => {
     console.log(req.session)
 
-    const url = req.url == "/" ? "/projects/?page=1" : req.url;
+    const url = req.url == "/" ? "/projects/?page=1" : `/projects${req.url}`;
     const findName = req.query.findName;
     const findId = parseInt(req.query.findId);
     const findMember = parseInt(req.query.findMember);
