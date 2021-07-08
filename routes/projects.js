@@ -30,8 +30,8 @@ module.exports = function (db) {
     let sqlCount =
       "select projects.projectid, projects.name, ARRAY_AGG(' ' || users.firstname) as members FROM members INNER JOIN users USING (userid) INNER JOIN projects USING (projectid) group by projects.projectid, projects.name order by projects.projectid;";
 
-    if(page){
-      sql = `select projects.projectid, projects.name, ARRAY_AGG(' ' || users.firstname) as members FROM members INNER JOIN users USING (userid) INNER JOIN projects USING (projectid) group by projects.projectid, projects.name order by projects.projectid limit 2 offset ${offset};`
+    if (page) {
+      sql = `select projects.projectid, projects.name, ARRAY_AGG(' ' || users.firstname) as members FROM members INNER JOIN users USING (userid) INNER JOIN projects USING (projectid) group by projects.projectid, projects.name order by projects.projectid limit 2 offset ${offset};`;
     }
 
     if (params.length > 0) {
@@ -98,67 +98,107 @@ module.exports = function (db) {
   });
 
   router.get("/add-project", helpers.isLoggedIn, (req, res) => {
-    res.render('../views/projects/add-project')
-  })
+    res.render("../views/projects/add-project");
+  });
   router.post("/add-project", (req, res) => {
-    db.query('insert into projects(name) values($1)', [req.body.name], (err) => {
-      if(err){
-        throw err
+    db.query(
+      "insert into projects(name) values($1)",
+      [req.body.name],
+      (err) => {
+        if (err) {
+          throw err;
+        }
+        res.redirect("/projects");
       }
-      res.redirect('/projects')
-    })
-  })
+    );
+  });
 
   router.get("/form", helpers.isLoggedIn, (req, res) => {
-    db.query('select * from users', (err, users) => {
-      db.query('select * from projects', (err, projects) => {
-        res.render("../views/projects/form", {users: users.rows, projects: projects.rows})
-      })
-    })
-  })
+    db.query("select * from users", (err, users) => {
+      db.query("select * from projects", (err, projects) => {
+        res.render("../views/projects/form", {
+          users: users.rows,
+          projects: projects.rows,
+        });
+      });
+    });
+  });
 
   router.post("/form", helpers.isLoggedIn, (req, res) => {
-    db.query('insert into members(userid, role, projectid) values($1, $2, $3)', [req.body.userid, req.body.role, req.body.projectid], (err) => {
-      res.redirect('/projects')
-    })
-  })
-
-  router.get('/edit/:id', helpers.isLoggedIn, (req, res) => {
-    let projectid = req.params.id
-    db.query("select users.userid, projects.projectid, projects.name, ARRAY_AGG(' ' || users.firstname) as members FROM members INNER JOIN users USING (userid) INNER JOIN projects USING (projectid) where projectid = $1 group by users.userid, projects.projectid, projects.name order by projects.projectid limit 2 offset 0;", [projectid], (err, data) => {
-      
-      if(err){
-        throw err
+    db.query(
+      "insert into members(userid, role, projectid) values($1, $2, $3)",
+      [req.body.userid, req.body.role, req.body.projectid],
+      (err) => {
+        res.redirect("/projects");
       }
-      res.render("../views/projects/edit", {data: data.rows})
-      })
-    
-  })
+    );
+  });
 
-  router.post('/edit/:id', (req, res) => {
-    let projectid = parseInt(req.params.id)
-    console.log(projectid)
-    db.query('delete from members where projectid = $1', [projectid], (err) => {
-      db.query('delete from projects where projectid= $1', [projectid], (err) => {
-        if(err){
-          throw err
+  router.get("/edit/:id", helpers.isLoggedIn, (req, res) => {
+    let projectid = req.params.id;
+    db.query("select projects.projectid, projects.name, ARRAY_AGG(users.firstname) as members FROM members INNER JOIN users USING (userid) INNER JOIN projects USING (projectid) where projectid = $1 group by projects.projectid, projects.name order by projects.projectid", [projectid], (err, data) => {
+      let name = data.rows[0].members
+      let name1 = []
+      for(let i = 0; i < name.length; i++){
+        if(i == 0){
+        name1.push("'" + name[i] + "'")
         }
-        res.redirect("/projects")
+        if(i > 0 && i == name.length - 2){
+          name1.push("'" + name[i] + "'")
+        }
+
+        if(i == name.length -1){
+          name1.push("'" + name[i] + "'")
+        }
+      }
+      name1.toString()
+      console.log(name1.toString())
+      db.query(`select * from users where not firstname in(${name1})`, (err, name) => {
+        res.render("../views/projects/edit", {data: data.rows, name: name.rows})
+
       })
     })
-  })
+  });
 
-  router.get('/delete/:id', (req, res) => {
-    let projectid = parseInt(req.params.id)
-    db.query('delete from members where projectid = $1', [projectid], (err) => {
-      db.query('delete from projects where projectid= $1', [projectid], (err) => {
-        if(err){
-          throw err
+  router.post("/edit/:id", (req, res) => {
+    let projectid = parseInt(req.params.id);
+    console.log(req.body.userid.length);
+    db.query("delete from members where projectid = $1", [projectid], (err) => {
+      db.query(
+        "update projects set name = $1 where projectid= $2",
+        [req.body.name, projectid],
+        (err) => {
+          for (let i = 0; i < req.body.userid.length; i++) {
+            db.query(
+              "insert into members(userid, role, projectid) values($1, 'Programmer', $2)",
+              [req.body.userid[i], projectid],
+              (err) => {
+                if (i == req.body.userid.length - 1) {
+                  res.redirect("/projects");
+                }
+              }
+            );
+          }
         }
-        res.redirect("/projects")
-      })
-    })
-  })
+      );
+    });
+  });
+
+  router.get("/delete/:id", (req, res) => {
+    let projectid = parseInt(req.params.id);
+    db.query("delete from members where projectid = $1", [projectid], (err) => {
+      db.query(
+        "delete from projects where projectid= $1",
+        [projectid],
+        (err) => {
+          if (err) {
+            throw err;
+          }
+          res.redirect("/projects");
+        }
+      );
+    });
+  });
 
   return router;
 };

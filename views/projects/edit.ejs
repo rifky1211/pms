@@ -21,12 +21,18 @@
     </div>
     <% } %> 
       <% }) %>
+      <% name.forEach(item => { %> 
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="userid" class="custom-control-input" id="<%= item.userid %>" value="<%= item.userid %>">
+        <label for="<%= item.userid %>" class="custom-control-label"><%= item.firstname %> </label>
+      </div>
+      <% }) %> 
     </div>
   </div>
   <div class="form-group">
     <label for="name" class="control-label sm-2">Name Project</label>
     <div class="col-sm-4">
-      <input type="text" class="form-control" value="<%= data[0].name %>" />
+      <input type="text" class="form-control"name="name" value="<%= data[0].name %>" />
     </div>
   </div>
   <button type="submit" class="btn btn-primary">Add</button>
