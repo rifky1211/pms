@@ -36,7 +36,11 @@ const pool = new Pool({
   database: 'dee3gdokbj6gu6',
   password: 'c12d3de69655f5c95684feb3c319bd2a31b26421cb6aa6eb8c00e80801490583',
   port: 5432,
-  ssl: true
+  ssl: { rejectUnauthorized: false }
+  // dialect: 'postgres',
+  // dialectOptions: {
+  //   "ssl": {"require":true }
+  // }
 })
 var indexRouter = require('./routes/index')(pool);
 var usersRouter = require('./routes/users');
