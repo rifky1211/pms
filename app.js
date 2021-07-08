@@ -23,12 +23,19 @@ const developmentDB = {
 
 const isDevelompent = false
 const { Pool } = require('pg')
-let pool = null
-if(isDevelompent){
-  pool = new Pool(developmentDB)
-}else{
-  pool = new Pool(productionDB)
-}
+// let pool = null
+// if(isDevelompent){
+//   pool = new Pool(developmentDB)
+// }else{
+//   pool = new Pool(productionDB)
+// }
+const pool = new Pool({
+  user: 'xxelajunoseaql',
+  host: 'ec2-35-169-188-58.compute-1.amazonaws.com',
+  database: 'dee3gdokbj6gu6',
+  password: 'c12d3de69655f5c95684feb3c319bd2a31b26421cb6aa6eb8c00e80801490583',
+  port: 5432
+})
 console.log(pool)
 pool.query('SELECT NOW()', (err, res) => {
   console.log(err, res)
