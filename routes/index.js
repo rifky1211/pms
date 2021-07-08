@@ -19,7 +19,7 @@ module.exports = function (db) {
       (err, data) => {
         if (err) {
           req.flash("info", "something wrong");
-          res.redirect("/");
+          return res.redirect("/");
         }
         if (data.rows.length == 0) {
           req.flash("info", "email or password wrong");
