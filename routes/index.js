@@ -17,13 +17,14 @@ module.exports = function (db) {
       "select * from users where email = $1",
       [req.body.email],
       (err, data) => {
+        console.log(err,data)
         if (err) {
           req.flash("info", "something wrong");
           return res.redirect("/");
         }
         if (data.rows.length == 0) {
           req.flash("info", "email or password wrong");
-          res.redirect("/");
+          return res.redirect("/");
         }
 
         bcrypt.compare(
@@ -32,6 +33,8 @@ module.exports = function (db) {
           function (err, result) {
             if (result) {
               req.session.user = data.rows[0];
+              console.log(result, 'session ',req.session)
+
               res.redirect("/projects");
             } else {
               req.flash("info", "email or password wrong");
