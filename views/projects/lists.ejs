@@ -173,7 +173,7 @@
           <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${page - 1}`)%>">Previous</a>
         </li>
         <% for(let i = 1; i <= jumlahHalaman; i++){ %> 
-        <li class="page-item <%= page == i ? 'active' : '' %> "><a class="page-link" href="<%= findId || findName || findMember ? '/projects' : '' %><%= url.replace(`page=${page}`, `page=${i}`) %>"><%= i %> </a></li>
+        <li class="page-item <%= page == i ? 'active' : '' %> "><a class="page-link" href="<%= url.replace(`page=${page}`, `page=${i}`) %>"><%= i %> </a></li>
         <% } %> 
         <li class="page-item <%= page < jumlahHalaman ? '' : 'disabled' %> ">
           <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${page + 1}`)%>">Next</a>
