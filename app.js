@@ -6,14 +6,29 @@ var logger = require('morgan');
 var session = require('express-session')
 var flash = require('connect-flash');
 
-const { Pool } = require('pg')
-const pool = new Pool({
+const productionDB = {
+  user: 'xxelajunoseaql',
+  host: 'ec2-35-169-188-58.compute-1.amazonaws.com',
+  database: 'dee3gdokbj6gu6',
+  password: 'c12d3de69655f5c95684feb3c319bd2a31b26421cb6aa6eb8c00e80801490583',
+  port: 5432,
+}
+const developmentDB = {
   user: 'postgres',
   host: 'localhost',
   database: 'batch25',
   password: '12345',
   port: 5432,
-})
+}
+
+const isDevelompent = false
+const { Pool } = require('pg')
+let pool = null
+if(isDevelompent){
+  pool = new Pool(developmentDB)
+}else{
+  pool = new Pool(productionDB)
+}
 
 var indexRouter = require('./routes/index')(pool);
 var usersRouter = require('./routes/users');
