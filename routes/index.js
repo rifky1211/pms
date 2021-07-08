@@ -7,11 +7,8 @@ const helpers = require("../helpers/util");
 
 module.exports = function (db) {
 
-  router.get('/', (req, res) => {
-    res.redirect('/projects')
-  })
 
-  router.get("/login", (req, res) => {
+  router.get("/", (req, res) => {
     res.render("login", {info: req.flash('info')});
   });
 
@@ -22,7 +19,7 @@ module.exports = function (db) {
       (err, data) => {
         if (err) {
           req.flash("info", "something wrong");
-          res.redirect("/login");
+          res.redirect("/");
         }
         if (data.rows.length == 0) {
           req.flash("info", "email or password wrong");
@@ -56,7 +53,7 @@ module.exports = function (db) {
         `insert into users(email, password, firstname, lastname, isfulltime, isparttime, position, role) values($1, $2, $3, $4, true, false, 'Programmer', 'ADMIN')`,
         [req.body.email, hash, req.body.firstname, req.body.lastname],
         (err, data) => {
-          res.redirect("/login");
+          res.redirect("/");
         }
       );
     });
@@ -64,7 +61,7 @@ module.exports = function (db) {
 
   router.get("/logout", (req, res, next) => {
     req.session.destroy(function (err) {
-      res.redirect("/login");
+      res.redirect("/");
     });
   });
 
