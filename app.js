@@ -31,7 +31,16 @@ const connectionString = 'postgres://xxelajunoseaql:c12d3de69655f5c95684feb3c319
 //   pool = new Pool(productionDB)
 // }
 const pool = new Pool({
-  connectionString,
+  user: 'xxelajunoseaql',
+  host: 'ec2-35-169-188-58.compute-1.amazonaws.com',
+  database: 'dee3gdokbj6gu6',
+  password: 'c12d3de69655f5c95684feb3c319bd2a31b26421cb6aa6eb8c00e80801490583',
+  port: 5432,
+  ssl: true
+  // dialect: 'postgres',
+  // dialectOptions: {
+  //   "ssl": {"require":true }
+  // }
 })
 console.log(pool)
 pool.query('SELECT NOW()', (err, res) => {
