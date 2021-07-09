@@ -1,0 +1,77 @@
+<%- include('../partials/header') %>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="/projects">Project Management System</a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarNav"
+    aria-controls="navbarNav"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="/projects"
+          >Projects <span class="sr-only">(current)</span></a
+        >
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/profile">Profile</a>
+      </li>
+    </ul>
+    <a
+      href="/logout"
+      class="btn btn-outline-success my-2 my-sm-0 d-flex justify-content-end"
+      >Logout</a
+    >
+  </div>
+</nav>
+<% if(success.length > 0){ %>
+  <div class="alert alert-success" id="alert-success" role="alert"><%= success %></div>
+<% } %>
+
+<h1>Update Profile</h1>
+
+<form action="" class="form-horizontal" method="POST">
+  <div class="form-group">
+    <label for="email" class="control-label sm-2">Email</label>
+    <div class="col-sm-4">
+      <input type="text" class="form-control" id="email" name="email" value="<%= email %> " readonly disabled />
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="position" class="control-label sm-2">Postion</label>
+    <div class="col-sm-4">
+      <select name="position" id="position" class="custom-select col-sm-10">
+        <option value="">Choose Position ...</option>
+        <option value="Programmer"<%= data.position == 'Programmer' ? ' selected' : '' %> >Programmer</option>
+        <option value="Quality Assurance"<%= data.position == 'Quality Assurance' ? ' selected' : '' %>>Quality Assurance</option>
+        <option value="Manager"<%= data.position == 'Manager' ? ' selected' : '' %>>Manager</option>
+      </select>
+    </div>
+  </div>
+  <div class="d-flex">
+    <div class="p-2">Type</div>
+    <div class="p-2 option-checkbox">
+      <div class="custom-control custom-checkbox">
+        <input name="isfulltime" type="checkbox" class="custom-control-input" value="true"
+        id="isfulltime"<%= data.isfulltime == true ? ' checked' : '' %>/>
+        <label class="custom-control-label" for="isfulltime">Fulltime</label>
+      </div>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary" id="btn-click">Update</button>
+  <a href="/profile/change-password" class="btn btn-warning">Change Password</a>
+</form>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+  $('#alert-success').fadeOut()
+});
+</script>
+
+<%- include('../partials/footer') %> 

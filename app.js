@@ -12,6 +12,7 @@ const productionDB = {
   database: 'dee3gdokbj6gu6',
   password: 'c12d3de69655f5c95684feb3c319bd2a31b26421cb6aa6eb8c00e80801490583',
   port: 5432,
+  ssl: { rejectUnauthorized: false }
 }
 const developmentDB = {
   user: 'postgres',
@@ -21,30 +22,19 @@ const developmentDB = {
   port: 5432,
 }
 
-const isDevelompent = false
+const isDevelompent = true
 const { Pool } = require('pg')
-const connectionString = 'postgres://xxelajunoseaql:c12d3de69655f5c95684feb3c319bd2a31b26421cb6aa6eb8c00e80801490583@ec2-35-169-188-58.compute-1.amazonaws.com:5432/dee3gdokbj6gu6'
-// let pool = null
-// if(isDevelompent){
-//   pool = new Pool(developmentDB)
-// }else{
-//   pool = new Pool(productionDB)
-// }
-const pool = new Pool({
-  user: 'xxelajunoseaql',
-  host: 'ec2-35-169-188-58.compute-1.amazonaws.com',
-  database: 'dee3gdokbj6gu6',
-  password: 'c12d3de69655f5c95684feb3c319bd2a31b26421cb6aa6eb8c00e80801490583',
-  port: 5432,
-  ssl: { rejectUnauthorized: false }
-  // dialect: 'postgres',
-  // dialectOptions: {
-  //   "ssl": {"require":true }
-  // }
-})
+let pool = null
+if(isDevelompent){
+  pool = new Pool(developmentDB)
+}else{
+  pool = new Pool(productionDB)
+}
+
 var indexRouter = require('./routes/index')(pool);
 var usersRouter = require('./routes/users');
 var projectsRouter = require('./routes/projects')(pool);
+var profileRouter = require('./routes/profile')(pool);
 
 var app = express();
 
@@ -65,6 +55,7 @@ app.use(flash())
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/projects', projectsRouter);
+app.use('/profile', profileRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -1,4 +1,35 @@
 <%- include('../partials/header') %>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="/projects">Project Management System</a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarNav"
+    aria-controls="navbarNav"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/projects"
+          >Projects <span class="sr-only">(current)</span></a
+        >
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/profile">Profile</a>
+      </li>
+    </ul>
+    <a
+      href="/logout"
+      class="btn btn-outline-success my-2 my-sm-0 d-flex justify-content-end"
+      >Logout</a
+    >
+  </div>
+</nav>
 
 <h1>Add Member to Project</h1>
 
@@ -7,19 +38,17 @@
     <div class="p-2">Name Members</div>
     <div class="p-2 option-checkbox">
       <% data.forEach(item => { %>
-        <% for(let i = 0; i < item.members.length; i++){ %> 
       <div class="custom-control custom-checkbox">
         <input
           name="userid"
           type="checkbox"
           class="custom-control-input"
-          id="<%= item.members[i] %>"
+          id="<%= item.userid %>"
           value="<%= item.userid %>"
           checked
         />
-        <label class="custom-control-label" for="<%= item.members[i] %>"><%= item.members[i] %></label>
+        <label class="custom-control-label" for="<%= item.userid %>"><%= item.firstname %></label>
     </div>
-    <% } %> 
       <% }) %>
       <% name.forEach(item => { %> 
       <div class="custom-control custom-checkbox">
@@ -32,7 +61,7 @@
   <div class="form-group">
     <label for="name" class="control-label sm-2">Name Project</label>
     <div class="col-sm-4">
-      <input type="text" class="form-control"name="name" value="<%= data[0].name %>" />
+      <input type="text" class="form-control"name="name" value="<%= count[0].name %>" />
     </div>
   </div>
   <button type="submit" class="btn btn-primary">Add</button>
