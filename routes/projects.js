@@ -6,6 +6,7 @@ const saltRounds = 10;
 const helpers = require("../helpers/util");
 
 module.exports = function (db) {
+  const namePage = 'projects'
   router.get("/", helpers.isLoggedIn, (req, res) => {
     const url = req.url == "/" ? "/projects/?page=1" : `/projects${req.url}`;
     const findName = req.query.findName;
@@ -74,6 +75,7 @@ module.exports = function (db) {
                 jumlahHalaman,
                 page,
                 url,
+                namePage
               });
             });
           }
@@ -100,7 +102,7 @@ module.exports = function (db) {
   router.get("/form", helpers.isLoggedIn, (req, res) => {
     db.query("select * from users", (err, users) => {
       res.render("../views/projects/form", {
-        users: users.rows,
+        users: users.rows, namePage
       });
     });
   });
@@ -159,6 +161,7 @@ module.exports = function (db) {
                   data: data.rows,
                   name: name.rows,
                   count: count.rows,
+                  namePage
                 });
               }
             );
@@ -208,6 +211,10 @@ module.exports = function (db) {
       );
     });
   });
+
+  router.get('/project-details', (req, res) => {
+    res.render('../views/projects/project-details', {namePage})
+  })
 
   return router;
 };

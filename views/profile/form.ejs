@@ -1,40 +1,13 @@
 <%- include('../partials/header') %>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="/projects">Project Management System</a>
-  <button
-    class="navbar-toggler"
-    type="button"
-    data-toggle="collapse"
-    data-target="#navbarNav"
-    aria-controls="navbarNav"
-    aria-expanded="false"
-    aria-label="Toggle navigation"
-  >
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="/projects"
-          >Projects <span class="sr-only">(current)</span></a
-        >
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="/profile">Profile</a>
-      </li>
-    </ul>
-    <a
-      href="/logout"
-      class="btn btn-outline-success my-2 my-sm-0 d-flex justify-content-end"
-      >Logout</a
-    >
-  </div>
-</nav>
+<%- include('../components/navbar') %> 
+
 <% if(success.length > 0){ %>
   <div class="alert alert-success" id="alert-success" role="alert"><%= success %></div>
 <% } %>
 
-<h1>Update Profile</h1>
+<div class="header-style">
+  <h1>Update Profile</h1>
+</div>
 
 <form action="" class="form-horizontal" method="POST">
   <div class="form-group">
