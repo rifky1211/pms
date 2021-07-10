@@ -1,0 +1,175 @@
+<%- include('../../partials/header-details.ejs') %> 
+<%- include('../../components/navbar') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <%- include('../../components/sidebar') %>
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+      <div
+        class="
+          d-flex
+          justify-content-between
+          flex-wrap flex-md-nowrap
+          align-items-center
+          pt-3
+          pb-2
+          mb-3
+          border-bottom
+        "
+      >
+        <h1 class="h2">Members</h1>
+      </div>
+      <div class="filter-style">
+        <h3>Filter</h3>
+      </div>
+      <form class="form-horizontal" action="" method="get">
+        <input type="hidden" name="page" value="1" />
+    
+        <div class="form-group">
+          <input type="checkbox" id="checkName" onclick="check()" />
+          <label class="control-label col-sm-2" for="integer">Name :</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" name="findName" id="findName"  disabled/>
+          </div>
+        </div>
+        <div class="form-group">
+          <input type="checkbox" id="checkPosition" onclick="check()" />
+          <label for="member" class="control-label col-sm-2">Member :</label>
+          <div class="col-sm-2">
+            <select name="findPosition" id="findPosition" class="custom-select col-sm-10" disabled>
+              <option value="">Find Position ...</option>
+              <option value="Programmer">Programmer</option>
+              <option value="Quality Assurance">Quality Assurance</option>
+              <option value="Manager">Manager</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-primary btn-search">Find</button>
+            <a href="/projects/members/<%= projectid %>" class="btn btn-warning btn-reset">Reset</a>
+          </div>
+        </div>
+      </form>
+      
+      <form action="" class="form-horizontal" method="post">
+        <div class="options">
+          <h3>Options</h3>
+        </div>
+        <div class="d-flex">
+          <div class="p-2">Columns</div>
+          <div class="p-2 option-checkbox">
+            <div class="custom-control custom-checkbox">
+              <input
+                name="id"
+                type="checkbox"
+                class="custom-control-input"
+                id="id-option"
+                <%= optionsmember["id"] ? ' checked' : '' %>
+              />
+              <label class="custom-control-label" for="id-option">ID</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+              <input
+                name="firstname"
+                type="checkbox"
+                class="custom-control-input"
+                id="name-option"
+                <%= optionsmember["firstname"] ? ' checked' : '' %>
+              />
+              <label class="custom-control-label" for="name-option">Name</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+              <input
+                name="position"
+                type="checkbox"
+                class="custom-control-input"
+                id="members-option"
+                <%= optionsmember["position"] ? ' checked' : '' %>
+              />
+              <label class="custom-control-label" for="members-option">Position</label>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Apply</button>
+      </form>
+      
+      <div class="table-data">
+        <table class="table table-striped">
+          <tr>
+            <% if(optionsmember["id"]){ %> 
+            <th class="id-data">#</th>
+              <% } %> 
+            <% if(optionsmember["firstname"]){ %>
+            <th class="name-head">Name</th>
+            <% } %> 
+            <% if(optionsmember["position"]){ %>
+            <th class="member-head">Position</th>
+            <% } %> 
+      
+            <th>Action</th>
+          </tr>
+          <% data.forEach((item, index) => { %> 
+          <tr>
+            <% if(optionsmember["id"]){ %> 
+            <td class="id-data"><%= index + (size * (page - 1)) +1 %></td>
+            <% } %> 
+
+            <% if(optionsmember["firstname"]){ %>
+            <td class="name-data"><%= item.firstname %></td>
+            <% } %> 
+            <% if(optionsmember["position"]){ %>
+            <td class="member-data"><%= item.role %></td>
+            <% } %> 
+            <td>
+              <a href="/projects/members/<%= projectid %>/edit/<%= item.userid %>" class="btn btn-success">Edit</a>
+              <a href="/projects/members/<%= projectid %>/delete/<%= item.userid %>" class="btn btn-danger">Delete</a>
+            </td>
+          </tr>
+          <% }) %> 
+        </table>
+      </div>
+      
+      <div>
+        <a href="/projects/members/<%= projectid %>/add" class="btn btn-primary">Add</a>
+      </div>
+      <div class="justify-content-center">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-center">
+            <li class="page-item <%= page > 1 ? '' : 'disabled' %> ">
+              <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${page - 1}`)%>">Previous</a>
+            </li>
+            <% for(let i = 1; i <= jumlahHalaman; i++){ %> 
+            <li class="page-item <%= page == i ? 'active' : '' %> "><a class="page-link" href="<%= url.replace(`page=${page}`, `page=${i}`) %>"><%= i %> </a></li>
+            <% } %> 
+            <li class="page-item <%= page < jumlahHalaman ? '' : 'disabled' %> ">
+              <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${page + 1}`)%>">Next</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </main>
+  </div>
+</div>
+
+
+
+<script>
+  function check() {
+    const checkName = document.getElementById("checkName");
+    const checkMembers = document.getElementById("checkPosition");
+
+    if (checkName.checked == true) {
+      document.getElementById("findName").disabled = false;
+    } else {
+      document.getElementById("findName").disabled = true;
+    }
+    if (checkMembers.checked == true) {
+      document.getElementById("findPosition").disabled = false;
+    } else {
+      document.getElementById("findPosition").disabled = true;
+    }
+  }
+</script>
+<%- include('../../partials/footer-details.ejs') %>
+

@@ -118,7 +118,7 @@
     <tr>
       <% data.forEach((item, index) => { %> <% if(options["projectid"]){ %>
       <td class="id-data">
-        <a href="/projects/project-details"><%= item.projectid %></a>
+        <a href="/projects/overview/<%= item.projectid %> "><%= item.projectid %></a>
       </td>
       <% } %> <% if(options["name"]){ %>
       <td class="name-data"><%= item.name %></td>

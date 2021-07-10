@@ -1,0 +1,48 @@
+<%- include('../../partials/header-details.ejs') %> 
+<%- include('../../components/navbar') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <%- include('../../components/sidebar') %>
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+      <div
+        class="
+          d-flex
+          justify-content-between
+          flex-wrap flex-md-nowrap
+          align-items-center
+          pt-3
+          pb-2
+          mb-3
+          border-bottom
+        "
+      >
+        <h1 class="h2">Edit Role</h1>
+      </div>
+      <form class="form-horizontal" action="" method="post">
+        <input type="hidden" name="page" value="1" />
+      
+        <div class="form-group">
+          <label for="member" class="control-label col-sm-8">Role :</label>
+          <div class="col-sm-2">
+            <select name="role" id="role" class="custom-select col-sm-12">
+              <option value="">Choose Role</option>
+              <option value="Quality Assurance"<%= data.role ==  'Quality Assurance' ? ' selected' : ''%>>Quality Assurance</option>
+              <option value="Programmer"<%= data.role ==  'Programmer' ? ' selected' : ''%>>Programmer</option>
+              <option value="Manager"<%= data.role ==  'Manager' ? ' selected' : ''%>>Manager</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-primary btn-search">Save</button>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+</div>
+
+
+<%- include('../../partials/footer-details.ejs') %>
+

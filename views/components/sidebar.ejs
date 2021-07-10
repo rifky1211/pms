@@ -2,7 +2,7 @@
   <div class="sidebar-sticky">
     <ul class="nav flex-column sidebar-style">
       <li class="nav-item mt-2">
-        <a class="nav-link active" href="#">
+        <a class="nav-link <%= nameSidebar == 'overview' ? ' active' : '' %>" href="/projects/overview/<%= projectid %>">
           <i class="fas fa-tachometer-alt mr-4"></i>
           Overview <span class="sr-only">(current)</span>
         </a>
@@ -11,7 +11,7 @@
         <a class="nav-link" href="#"><i class="fas fa-chart-line mr-4"></i> Activity </a>
       </li>
       <li class="nav-item my-2">
-        <a class="nav-link" href="#"><i class="fas fa-users mr-4"></i> Members </a>
+        <a class="nav-link <%= nameSidebar == 'members' ? ' active' : '' %>" href="/projects/members/<%= projectid %>"><i class="fas fa-users mr-4"></i> Members </a>
       </li>
       <li class="nav-item my-2">
         <a class="nav-link" href="#"><i class="fas fa-exclamation-triangle mr-4"></i> Issues </a>

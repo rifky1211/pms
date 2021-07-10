@@ -87,3 +87,34 @@ body {
 .sidebar-style{
   margin-top: 20px;
 }
+.card-members-styling{
+  margin-top: 100px;
+}
+.btn-search {
+  margin-top: 20px;
+}
+.btn-reset {
+  margin-top: 20px;
+  margin-left: 15px;
+}
+
+.form-group{
+  margin-bottom: 20px;
+}
+
+.form-control{
+  margin-top: 10px;
+}
+
+ .option-checkbox{
+  margin-left: 50px;
+}
+
+.table-data{
+  margin-top: 30px;
+}
+
+.header-style{
+  padding-top: 30px;
+  margin-bottom: 20px;
+}
