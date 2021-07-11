@@ -1,9 +1,9 @@
-<%- include('../../partials/header-details.ejs') %> 
-<%- include('../../components/navbar') %>
+<%- include('../../../partials/header-details.ejs') %> 
+<%- include('../../../components/navbar') %>
 
 <div class="container-fluid">
   <div class="row">
-    <%- include('../../components/sidebar') %>
+    <%- include('../../../components/sidebar') %>
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
       <div
         class="
@@ -26,21 +26,21 @@
         <input type="hidden" name="page" value="1" />
     
         <div class="form-group">
-          <input type="checkbox" id="checkName" onclick="check()" />
+          <input type="checkbox" id="checkName" onclick="check()" <%= findName ? ' checked' : '' %> />
           <label class="control-label col-sm-2" for="integer">Name :</label>
           <div class="col-sm-4">
-            <input type="text" class="form-control" name="findName" id="findName"  disabled/>
+            <input type="text" class="form-control" name="findName" id="findName" value="<%= findName %>" <%= findName ? '' : ' disabled' %> />
           </div>
         </div>
         <div class="form-group">
-          <input type="checkbox" id="checkPosition" onclick="check()" />
+          <input type="checkbox" id="checkPosition" onclick="check()" <%= findPosition ? ' checked' : '' %>/>
           <label for="member" class="control-label col-sm-2">Member :</label>
           <div class="col-sm-2">
-            <select name="findPosition" id="findPosition" class="custom-select col-sm-10" disabled>
+            <select name="findPosition" id="findPosition" class="custom-select col-sm-10" <%= findPosition ? '' : ' disabled' %>>
               <option value="">Find Position ...</option>
-              <option value="Programmer">Programmer</option>
-              <option value="Quality Assurance">Quality Assurance</option>
-              <option value="Manager">Manager</option>
+              <option value="Programmer" <%= findPosition == 'Programmer' ? ' selected' : '' %>>Programmer</option>
+              <option value="Quality Assurance"<%= findPosition == 'Quality Assurance' ? ' selected' : '' %>>Quality Assurance</option>
+              <option value="Manager"<%= findPosition == 'Manager' ? ' selected' : '' %>>Manager</option>
             </select>
           </div>
         </div>
@@ -171,5 +171,5 @@
     }
   }
 </script>
-<%- include('../../partials/footer-details.ejs') %>
+<%- include('../../../partials/footer-details.ejs') %>
 

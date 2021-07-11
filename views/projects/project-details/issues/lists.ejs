@@ -1,0 +1,192 @@
+<%- include('../../../partials/header-details.ejs') %> 
+<%- include('../../../components/navbar') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <%- include('../../../components/sidebar') %>
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+      <div
+        class="
+          d-flex
+          justify-content-between
+          flex-wrap flex-md-nowrap
+          align-items-center
+          pt-3
+          pb-2
+          mb-3
+          border-bottom
+        "
+      >
+        <h1 class="h2">Issues</h1>
+      </div>
+      <div class="filter-style">
+        <h3>Filter</h3>
+      </div>
+      <form class="form-horizontal" action="" method="get">
+        <input type="hidden" name="page" value="1" />
+        <div class="form-group">
+            <input type="checkbox" id="checkId" onclick="check()" <%= findId ? ' checked' : '' %>/>
+            <label class="control-label col-sm-2" for="findId">ID :</label>
+            <div class="col-sm-4">
+              <input type="number" class="form-control" name="findId" id="findId" value="<%= findId %>" <%= findId ? '' : ' disabled' %> />
+            </div>
+        </div>
+
+        <div class="form-group">
+          <input type="checkbox" id="checkSubject" onclick="check()" <%= findSubject ? ' checked' : '' %>/>
+          <label class="control-label col-sm-2" for="findSubject">Subject :</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" name="findSubject" id="findSubject" value="<%= findSubject %>" <%= findSubject ? '' : ' disabled' %> />
+          </div>
+        </div>
+        <div class="form-group">
+          <input type="checkbox" id="checkTracker" onclick="check()" <%= findTracker ? ' checked' : '' %>/>
+          <label for="findTracker" class="control-label col-sm-2">Tracker :</label>
+          <div class="col-sm-2">
+            <select name="findTracker" id="findTracker" class="custom-select col-sm-10" <%= findTracker ? '' : ' disabled' %>>
+              <option value="">Find Tracker ...</option>
+              <option value="Bug"<%= findTracker == 'Bug' ? ' selected' : '' %>>Bug</option>
+              <option value="Feature"<%= findTracker == 'Feature' ? ' selected' : '' %>>Feature</option>
+              <option value="Support"<%= findTracker == 'Support' ? ' selected' : '' %>>Support</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-primary btn-search">Find</button>
+            <a href="#" class="btn btn-warning btn-reset">Reset</a>
+          </div>
+        </div>
+      </form>
+      
+      <form action="" class="form-horizontal" method="post">
+        <div class="options">
+          <h3>Options</h3>
+        </div>
+        <div class="d-flex">
+          <div class="p-2">Columns</div>
+          <div class="p-2 option-checkbox">
+            <div class="custom-control custom-checkbox">
+              <input
+                name="id"
+                type="checkbox"
+                class="custom-control-input"
+                id="id-option"
+                <%= options["id"] ? ' checked' : '' %>
+              />
+              <label class="custom-control-label" for="id-option">ID</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+              <input
+                name="subject"
+                type="checkbox"
+                class="custom-control-input"
+                id="name-option"
+                <%= options["subject"] ? ' checked' : '' %>
+              />
+              <label class="custom-control-label" for="name-option">Subject</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+              <input
+                name="tracker"
+                type="checkbox"
+                class="custom-control-input"
+                id="members-option"
+                <%= options["tracker"] ? ' checked' : '' %>
+              />
+              <label class="custom-control-label" for="members-option">Tracker</label>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Apply</button>
+      </form>
+      
+      <div class="table-data">
+        <table class="table table-striped">
+          <tr>
+            <% if(options["id"]){ %> 
+            <th class="id-data">#</th>
+            <% } %> 
+            <% if(options["subject"]){ %> 
+            <th class="name-head">Subject</th>
+            <% } %> 
+            <% if(options["tracker"]){ %> 
+            <th class="member-head">Tracker</th>
+            <% } %> 
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Action</th>
+          </tr>
+          <% data.forEach(item => { %> 
+          <tr>
+            <% if(options["id"]){ %> 
+            <td class="id-data">
+              <a href="#"><%= item.issueid %></a>
+            </td>
+            <% } %> 
+            <% if(options["subject"]){ %> 
+            <td class="name-data"><%= item.subject %></td>
+            <% } %> 
+            <% if(options["tracker"]){ %> 
+            <td class="member-data"><%= item.tracker %></td>
+            <% } %> 
+            <td><span class="badge badge-info"><%= item.status %></span></td>
+            <td><span class="badge badge-<%= item.priority == 'Normal' ? 'warning' : 'danger' %>"><%= item.priority %></span></td>
+            <td>
+              <a href="/projects/issues/<%= projectid %>/edit/<%= item.issueid %>" class="btn btn-success">Edit</a>
+              <a href="/projects/issues/<%= projectid %>/delete/<%= item.issueid %>" class="btn btn-danger">Delete</a>
+            </td>
+          </tr>
+          <% }) %> 
+        </table>
+      </div>
+      
+      <div>
+        <a href="/projects/issues/<%= projectid %>/add" class="btn btn-primary">Add</a>
+      </div>
+      <div class="justify-content-center">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-center">
+            <li class="page-item <%= page > 1 ? '' : 'disabled' %> ">
+              <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${page - 1}`)%>">Previous</a>
+            </li>
+            <% for(let i = 1; i <= jumlahHalaman; i++){ %> 
+            <li class="page-item <%= page == i ? 'active' : '' %> "><a class="page-link" href="<%= url.replace(`page=${page}`, `page=${i}`) %>"><%= i %> </a></li>
+            <% } %> 
+            <li class="page-item <%= page < jumlahHalaman ? '' : 'disabled' %> ">
+              <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${page + 1}`)%>">Next</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </main>
+  </div>
+</div>
+
+
+
+<script>
+  function check() {
+    const checkID = document.getElementById("checkId");
+    const checkSubject = document.getElementById("checkSubject");
+    const checkTracker = document.getElementById("checkTracker");
+
+    if (checkID.checked == true) {
+      document.getElementById("findId").disabled = false;
+    } else {
+      document.getElementById("findId").disabled = true;
+    }
+    if (checkSubject.checked == true) {
+      document.getElementById("findSubject").disabled = false;
+    } else {
+      document.getElementById("findSubject").disabled = true;
+    }
+    if (checkTracker.checked == true) {
+      document.getElementById("findTracker").disabled = false;
+    } else {
+      document.getElementById("findTracker").disabled = true;
+    }
+  }
+</script>
+<%- include('../../../partials/footer-details.ejs') %>
+
