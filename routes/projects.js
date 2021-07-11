@@ -537,9 +537,8 @@ module.exports = function (db) {
       duedate,
       estimatedtime,
       done,
-      files,
     } = req.body;
-
+    const files = `${req.files.files.name}${Date.now().toString()}`;
     db.query(
       "insert into issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, files, author, createddate) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, now())",
       [
@@ -554,14 +553,18 @@ module.exports = function (db) {
         req.body.duedate,
         req.body.estimatedtime,
         req.body.done,
-        req.body.files,
+        files,
         req.session.user.userid,
       ],
       (err) => {
-        if (err) {
-          throw err;
-        }
-        res.redirect(`/projects/issues/${projectid}`);
+        let file = req.files.files;
+        let uploadPath = "/home/rifky/Desktop/pms/public/" + file.name;
+        file.mv(uploadPath, (err) => {
+          if (err) {
+            throw err;
+          }
+          res.redirect(`/projects/issues/${projectid}`);
+        });
       }
     );
   });
@@ -612,8 +615,8 @@ module.exports = function (db) {
         duedate,
         estimatedtime,
         done,
-        files,
       } = req.body;
+      const files = `${req.files.files.name}${Date.now().toString()}`;
       if (status == "Closed") {
         db.query(
           "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11, author = $12, closeddate = now() where issueid = $13",
@@ -628,45 +631,64 @@ module.exports = function (db) {
             req.body.duedate,
             req.body.estimatedtime,
             req.body.done,
-            req.body.files,
+            files,
             req.session.user.userid,
             issueid,
           ],
           (err) => {
-            res.redirect(`/projects/issues/${projectid}`);
+            let file = req.files.files;
+            let uploadPath = "/home/rifky/Desktop/pms/public/" + file.name;
+            file.mv(uploadPath, (err) => {
+              if (err) {
+                throw err;
+              }
+              res.redirect(`/projects/issues/${projectid}`);
+            });
           }
         );
-      }else{
-      db.query(
-        "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11, author = $12, updateddate = now() where issueid = $13",
-        [
-          req.body.tracker,
-          req.body.subject,
-          req.body.description,
-          req.body.status,
-          req.body.priority,
-          req.body.assignee,
-          req.body.startdate,
-          req.body.duedate,
-          req.body.estimatedtime,
-          req.body.done,
-          req.body.files,
-          req.session.user.userid,
-          issueid,
-        ],
-        (err) => {
-          res.redirect(`/projects/issues/${projectid}`);
-        }
-      );
+      } else {
+        db.query(
+          "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11, author = $12, updateddate = now() where issueid = $13",
+          [
+            req.body.tracker,
+            req.body.subject,
+            req.body.description,
+            req.body.status,
+            req.body.priority,
+            req.body.assignee,
+            req.body.startdate,
+            req.body.duedate,
+            req.body.estimatedtime,
+            req.body.done,
+            files,
+            req.session.user.userid,
+            issueid,
+          ],
+          (err) => {
+            let file = req.files.files;
+            let uploadPath = "/home/rifky/Desktop/pms/public/" + file.name;
+            file.mv(uploadPath, (err) => {
+              if (err) {
+                throw err;
+              }
+              res.redirect(`/projects/issues/${projectid}`);
+            });
+          }
+        );
+      }
     }
-  });
+  );
 
-  router.get('/issues/:projectid/delete/:issueid', helpers.isLoggedIn, (req, res) => {
-    const { projectid, issueid } = req.params;
-    db.query('delete from issues where issueid = $1', [issueid], (err) => {
-      if(err) throw err
-      res.redirect(`/projects/issues/${projectid}`);
-    })
-  })
+  router.get(
+    "/issues/:projectid/delete/:issueid",
+    helpers.isLoggedIn,
+    (req, res) => {
+      const { projectid, issueid } = req.params;
+      db.query("delete from issues where issueid = $1", [issueid], (err) => {
+        if (err) throw err;
+        res.redirect(`/projects/issues/${projectid}`);
+      });
+    }
+  );
   return router;
 };

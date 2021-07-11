@@ -21,7 +21,7 @@ include('../../../components/navbar') %>
       </div>
       <div class="card pr-4">
         <div class="card-body pr-4">
-          <form action="" class="form-horizontal" method="POST">
+          <form action="" class="form-horizontal" method="POST" enctype="multipart/form-data">
             <div class="row mb-4">
               <div class="col-sm-2">Tracker</div>
               <div class="col-sm-10">
@@ -219,7 +219,7 @@ include('../../../components/navbar') %>
             <div class="form-group">
               <div class="row mb-4">
                 <label for="files" class="control-label col-sm-2">Files</label>
-                <input type="text" id="files" name="files" class="form-control col-sm-3" placeholder="Subject">
+                <input type="file" id="files" name="files" class="form-control col-sm-3" placeholder="Subject" >
               </div>
             </div>
             <button type="submit" class="btn btn-primary mt-4">Add</button>

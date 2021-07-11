@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session')
 var flash = require('connect-flash');
+var fileUpload = require('express-fileupload')
 
 const productionDB = {
   user: 'xxelajunoseaql',
@@ -51,6 +52,7 @@ app.use(session({
   secret: 'pms'
 }))
 app.use(flash())
+app.use(fileUpload())
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
