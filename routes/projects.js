@@ -3,6 +3,7 @@ var router = express.Router();
 const bcrypt = require("bcrypt");
 const { response } = require("express");
 const saltRounds = 10;
+var path = require('path');
 const helpers = require("../helpers/util");
 var moment = require("moment");
 
@@ -558,7 +559,7 @@ module.exports = function (db) {
       ],
       (err) => {
         let file = req.files.files;
-        let uploadPath = "/home/rifky/Desktop/pms/public/" + file.name;
+        let uploadPath = path.join(__dirname, `../public/${file.name}`)
         file.mv(uploadPath, (err) => {
           if (err) {
             throw err;
@@ -637,7 +638,7 @@ module.exports = function (db) {
           ],
           (err) => {
             let file = req.files.files;
-            let uploadPath = "/home/rifky/Desktop/pms/public/" + file.name;
+            let uploadPath = path.join(__dirname, `../public/${file.name}`)
             file.mv(uploadPath, (err) => {
               if (err) {
                 throw err;
@@ -666,7 +667,7 @@ module.exports = function (db) {
           ],
           (err) => {
             let file = req.files.files;
-            let uploadPath = "/home/rifky/Desktop/pms/public/" + file.name;
+            let uploadPath = path.join(__dirname, `../public/${file.name}`)
             file.mv(uploadPath, (err) => {
               if (err) {
                 throw err;
