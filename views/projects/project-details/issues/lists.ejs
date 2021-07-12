@@ -130,8 +130,33 @@
             <% if(options["tracker"]){ %> 
             <td class="member-data"><%= item.tracker %></td>
             <% } %> 
-            <td><span class="badge badge-info"><%= item.status %></span></td>
-            <td><span class="badge badge-<%= item.priority == 'Normal' ? 'warning' : 'danger' %>"><%= item.priority %></span></td>
+            <td>
+              <% if(item.status == 'New'){ %> 
+                <span class="badge badge-primary"><%= item.status %></span>
+              <% } %> 
+              <% if(item.status == 'In Progress'){ %> 
+                <span class="badge badge-info"><%= item.status %></span>
+              <% } %> 
+              <% if(item.status == 'Resolved' || item.status == 'Feedback'){ %> 
+                <span class="badge badge-success"><%= item.status %></span>
+              <% } %> 
+              <% if(item.status == 'Closed'){ %> 
+                <span class="badge badge-secondary"><%= item.status %></span>
+              <% } %> 
+              <% if(item.status == 'Rejected'){ %> 
+                <span class="badge badge-danger"><%= item.status %></span>
+              <% } %> 
+            </td>
+            <td>
+              <% if(item.priority == 'Normal'){ %> 
+              <span class="badge badge-primary"><%= item.priority %></span></td>
+              <% } %> 
+              <% if(item.priority == 'High'){ %> 
+                <span class="badge badge-warning"><%= item.priority %></span></td>
+              <% } %>
+              <% if(item.priority == 'Urgent' || item.priority == 'Immediate'){ %> 
+                <span class="badge badge-danger"><%= item.priority %></span></td>
+              <% } %> 
             <td>
               <a href="/projects/issues/<%= projectid %>/edit/<%= item.issueid %>" class="btn btn-success">Edit</a>
               <a href="/projects/issues/<%= projectid %>/delete/<%= item.issueid %>" class="btn btn-danger">Delete</a>

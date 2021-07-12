@@ -539,7 +539,34 @@ module.exports = function (db) {
       estimatedtime,
       done,
     } = req.body;
-    const files = `${req.files.files.name}${Date.now().toString()}`;
+    const files = `${Date.now().toString()}|${req.files.files.name}`;
+    const manyFiles = []
+    
+
+    if(req.files.files.length > 1){
+    req.files.files.forEach(item => {
+      let fileName = `${Date.now()}|${item.name}`
+      let uploadPath = path.join(__dirname, '..', 'public', 'uploaded', fileName)
+      item.mv(uploadPath, (err) => {
+        if (err) {
+          throw err;
+        }
+        return manyFiles.push({name: fileName, type: item.mimetype})
+      });
+    })
+  }
+  if(req.files.files){
+    let fileName = `${Date.now()}|${req.files.files.name}`
+    let uploadPath = path.join(__dirname, '..', 'public', 'uploaded', fileName)
+    req.files.files.mv(uploadPath, (err) => {
+      if(err){
+        throw err
+      }
+      return manyFiles.push({name: fileName, type: req.files.files.mimetype})
+
+    })
+  }
+
     db.query(
       "insert into issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, files, author, createddate) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, now())",
       [
@@ -554,18 +581,11 @@ module.exports = function (db) {
         req.body.duedate,
         req.body.estimatedtime,
         req.body.done,
-        files,
+        manyFiles,
         req.session.user.userid,
       ],
       (err) => {
-        let file = req.files.files;
-        let uploadPath = path.join(__dirname, `../public/${file.name}`)
-        file.mv(uploadPath, (err) => {
-          if (err) {
-            throw err;
-          }
-          res.redirect(`/projects/issues/${projectid}`);
-        });
+            res.redirect(`/projects/issues/${projectid}`);
       }
     );
   });
@@ -577,6 +597,7 @@ module.exports = function (db) {
       const { projectid, issueid } = req.params;
       const nameSidebar = "issues";
 
+      const baseUrl = `http://${req.headers.host}`
       db.query(
         "select * from issues where issueid = $1",
         [issueid],
@@ -585,6 +606,7 @@ module.exports = function (db) {
             "select * from users where userid in (select userid from members where projectid = $1)",
             [projectid],
             (err, names) => {
+              console.log(data.rows[0].files)
               res.render("../views/projects/project-details/issues/edit", {
                 data: data.rows[0],
                 nameSidebar,
@@ -592,6 +614,7 @@ module.exports = function (db) {
                 projectid,
                 names: names.rows,
                 moment: moment,
+                baseUrl
               });
             }
           );
@@ -617,7 +640,19 @@ module.exports = function (db) {
         estimatedtime,
         done,
       } = req.body;
-      const files = `${req.files.files.name}${Date.now().toString()}`;
+      const files = `${Date.now().toString()}|${req.files.files.name}`;
+      const manyFiles = []
+
+    req.files.files.forEach(item => {
+      let fileName = Date.now() + item.name
+      let uploadPath = path.join(__dirname, '..', 'public', 'uploaded', fileName)
+      item.mv(uploadPath, (err) => {
+        if (err) {
+          throw err;
+        }
+        manyFiles.push({name: `${Date.now()}|${item.name}`, type: item.mimetype})
+      });
+    })
       if (status == "Closed") {
         db.query(
           "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11, author = $12, closeddate = now() where issueid = $13",
@@ -637,14 +672,9 @@ module.exports = function (db) {
             issueid,
           ],
           (err) => {
-            let file = req.files.files;
-            let uploadPath = path.join(__dirname, `../public/${file.name}`)
-            file.mv(uploadPath, (err) => {
-              if (err) {
-                throw err;
-              }
-              res.redirect(`/projects/issues/${projectid}`);
-            });
+            
+            res.redirect(`/projects/issues/${projectid}`);
+            
           }
         );
       } else {
@@ -666,14 +696,7 @@ module.exports = function (db) {
             issueid,
           ],
           (err) => {
-            let file = req.files.files;
-            let uploadPath = path.join(__dirname, `../public/${file.name}`)
-            file.mv(uploadPath, (err) => {
-              if (err) {
-                throw err;
-              }
-              res.redirect(`/projects/issues/${projectid}`);
-            });
+            res.redirect(`/projects/issues/${projectid}`);
           }
         );
       }

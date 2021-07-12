@@ -225,8 +225,26 @@ include('../../../components/navbar') %>
             <div class="form-group">
               <div class="row mb-4">
                 <label for="files" class="control-label col-sm-2">Files</label>
-                <input type="file" id="files" name="files" class="form-control col-sm-3" placeholder="Subject" required>
+                <input type="file" id="files" name="files" class="form-control col-sm-3" placeholder="Subject">
+               
               </div>
+            </div>
+            <div class="row">
+              <table class="table-striped col-sm-6">
+                <tr>
+                  <th>File</th>
+                </tr>
+                <tr>
+                  <td>
+                    <% if(data.files.length > 0){ %> 
+                    <ul>
+                      <% data.files.forEach(file => { %> 
+                      <li><img src="<%= `${baseUrl}/uploaded/${file.name}` %>" alt="a" width="100"></li>
+                    </ul>
+                    <% })} %> 
+                  </td>
+                </tr>
+              </table>
             </div>
             <button type="submit" class="btn btn-primary mt-4">Save</button>
           </form>
