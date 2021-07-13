@@ -221,7 +221,7 @@ include('../../../components/navbar') %>
             <div class="form-group">
               <div class="row mb-4">
                 <label for="files" class="control-label col-sm-2">Files</label>
-                <input type="file" id="files" name="files" class="form-control col-sm-3" placeholder="Subject" required/>
+                <input type="file" id="files" name="files" class="form-control col-sm-3" placeholder="Subject"/>
               </div>
             </div>
             <div class="row" id="button-add">
@@ -236,23 +236,24 @@ include('../../../components/navbar') %>
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){
-  $('#form-add').on( "click", ".btn-delete", function() {
-   console.log(
-     $(this).parents().parents().parents().html()) ;
-});
-})
-    var input = `  <div class="row-add form-group">
-                    <div class="row mb-4">
-                      <label class="control-label col-sm-2"></label>
-                      <input type="file" name="files" class="form-control col-sm-3" placeholder="Subject" required />
-                      <button type="button" class="btn btn-primary btn-plus-styling ml-4 btn-delete"><i class="fas fa-minus"></i></button>
-                     </div>
-                  </div>`
-                  
-    function add(){
-      $("#button-add").before(input)
-    }          
-</script>
+  $(document).ready(function(){
+    $('.card').on( "click", ".btn-delete", function() {
+   
+       $(this).closest(".row-add").remo() ;
+  });
+  })
+      var input = `  <div class="row-add form-group">
+                      <div class="row mb-4">
+                        <label class="control-label col-sm-2"></label>
+                        <input type="file" name="files" class="form-control col-sm-3" placeholder="Subject" required />
+                        <button type="button" class="btn btn-primary btn-plus-styling ml-4 btn-delete"><i class="fas fa-minus"></i></button>
+                       </div>
+                    </div>`
+                    
+      function add(){
+        $("#files").prop('required', true)
+        $("#button-add").before(input)
+      }          
+  </script>
 
 <%- include('../../../partials/footer-details.ejs') %>

@@ -223,11 +223,14 @@ include('../../../components/navbar') %>
               </div>
             </div>
             <div class="form-group">
-              <div class="row mb-4">
+              <div class="row">
                 <label for="files" class="control-label col-sm-2">Files</label>
                 <input type="file" id="files" name="files" class="form-control col-sm-3" placeholder="Subject">
-               
-              </div>
+               </div>
+            </div>
+            <div class="row mb-4" id="button-add">
+              <div class="col-sm-2"></div>
+              <div class="col-sm-3"><button type="button" id="button-add-first" onclick="add()" class="btn btn-primary btn-plus-styling"><i class="fas fa-plus"></i></button></div>
             </div>
             <div class="row">
               <table class="table-striped col-sm-6">
@@ -236,10 +239,10 @@ include('../../../components/navbar') %>
                 </tr>
                 <tr>
                   <td>
-                    <% if(data.files.length > 0){ %> 
+                    <% if(data.files){ %> 
                     <ul>
                       <% data.files.forEach(file => { %> 
-                      <li><img src="<%= `${baseUrl}/uploaded/${file.name}` %>" alt="a" width="100"></li>
+                      <li><img src="<%= file ? `${baseUrl}/uploaded/${file.name}` : '' %>" alt="a" width="100"></li>
                     </ul>
                     <% })} %> 
                   </td>
@@ -253,5 +256,24 @@ include('../../../components/navbar') %>
     </main>
   </div>
 </div>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('.card').on( "click", ".btn-delete", function() { 
+       $(this).closest(".row-add").remove();
+    });
+  })
+      var input = `  <div class="row-add form-group">
+                      <div class="row mb-4">
+                        <label class="control-label col-sm-2"></label>
+                        <input type="file" name="files" class="form-control col-sm-3" placeholder="Subject" required />
+                        <button type="button" class="btn btn-primary btn-plus-styling ml-4 btn-delete"><i class="fas fa-minus"></i></button>
+                       </div>
+                    </div>`
+                    
+      function add(){
+        $("#files").prop('required', true)
+        $("#button-add").before(input)
+      }          
+  </script>
 
 <%- include('../../../partials/footer-details.ejs') %>
