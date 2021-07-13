@@ -3,7 +3,7 @@ var router = express.Router();
 const bcrypt = require("bcrypt");
 const { response } = require("express");
 const saltRounds = 10;
-var path = require('path');
+var path = require("path");
 const helpers = require("../helpers/util");
 var moment = require("moment");
 
@@ -539,9 +539,9 @@ module.exports = function (db) {
       estimatedtime,
       done,
     } = req.body;
-    const manyFiles = []
+    const manyFiles = [];
 
-    if(!req.files){
+    if (!req.files) {
       return db.query(
         "insert into issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, author, createddate) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, now())",
         [
@@ -559,54 +559,68 @@ module.exports = function (db) {
           req.session.user.userid,
         ],
         (err) => {
-          if(err) throw err
-               res.redirect(`/projects/issues/${projectid}`);
+          if (err) throw err;
+          res.redirect(`/projects/issues/${projectid}`);
         }
       );
-    }else if(req.files.files.length > 1){
-    req.files.files.forEach(item => {
-      let fileName = `${Date.now()}|${item.name}`
-      let uploadPath = path.join(__dirname, '..', 'public', 'uploaded', fileName)
-      item.mv(uploadPath, (err) => {
+    } else if (req.files.files.length > 1) {
+      req.files.files.forEach((item) => {
+        let fileName = `${Date.now()}|${item.name}`;
+        let uploadPath = path.join(
+          __dirname,
+          "..",
+          "public",
+          "uploaded",
+          fileName
+        );
+        item.mv(uploadPath, (err) => {
+          if (err) {
+            throw err;
+          }
+          manyFiles.push({ name: fileName, type: item.mimetype });
+        });
+        console.log(manyFiles);
+      });
+    } else if (req.files.files) {
+      let fileName = `${Date.now()}|${req.files.files.name}`;
+      let uploadPath = path.join(
+        __dirname,
+        "..",
+        "public",
+        "uploaded",
+        fileName
+      );
+      req.files.files.mv(uploadPath, (err) => {
         if (err) {
           throw err;
         }
-          manyFiles.push({name: fileName, type: item.mimetype})
+        manyFiles.push({ name: fileName, type: req.files.files.mimetype });
       });
-    })
-  } else if(req.files.files){
-    let fileName = `${Date.now()}|${req.files.files.name}`
-    let uploadPath = path.join(__dirname, '..', 'public', 'uploaded', fileName)
-    req.files.files.mv(uploadPath, (err) => {
-      if(err){
-        throw err
-      }
-        manyFiles.push({name: fileName, type: req.files.files.mimetype})
-    })
-  }
-  if(req.files.files){
-  db.query(
-    "insert into issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, files, author, createddate) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, now())",
-    [
-      projectid,
-      req.body.tracker,
-      req.body.subject,
-      req.body.description,
-      req.body.status,
-      req.body.priority,
-      req.body.assignee,
-      req.body.startdate,
-      req.body.duedate,
-      req.body.estimatedtime,
-      req.body.done,
-      manyFiles,
-      req.session.user.userid,
-    ],
-    (err) => {
-          res.redirect(`/projects/issues/${projectid}`);
     }
-  );
-}
+    if (req.files.files) {
+      console.log(manyFiles);
+      db.query(
+        "insert into issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, files, author, createddate) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, now())",
+        [
+          projectid,
+          req.body.tracker,
+          req.body.subject,
+          req.body.description,
+          req.body.status,
+          req.body.priority,
+          req.body.assignee,
+          req.body.startdate,
+          req.body.duedate,
+          req.body.estimatedtime,
+          req.body.done,
+          manyFiles,
+          req.session.user.userid,
+        ],
+        (err) => {
+          res.redirect(`/projects/issues/${projectid}`);
+        }
+      );
+    }
   });
 
   router.get(
@@ -616,16 +630,22 @@ module.exports = function (db) {
       const { projectid, issueid } = req.params;
       const nameSidebar = "issues";
 
-      const baseUrl = `http://${req.headers.host}`
+      const baseUrl = `http://${req.headers.host}`;
       db.query(
         "select * from issues where issueid = $1",
         [issueid],
         (err, data) => {
+          let nameFiles = [];
+          if (data.rows[0].files) {
+            let files = data.rows[0].files;
+            files.forEach((item) => {
+              nameFiles.push(item.name);
+            });
+          }
           db.query(
             "select * from users where userid in (select userid from members where projectid = $1)",
             [projectid],
             (err, names) => {
-              console.log(data.rows[0].files)
               res.render("../views/projects/project-details/issues/edit", {
                 data: data.rows[0],
                 nameSidebar,
@@ -633,7 +653,8 @@ module.exports = function (db) {
                 projectid,
                 names: names.rows,
                 moment: moment,
-                baseUrl
+                baseUrl,
+                nameFiles,
               });
             }
           );
@@ -647,23 +668,12 @@ module.exports = function (db) {
     helpers.isLoggedIn,
     (req, res) => {
       const { projectid, issueid } = req.params;
-      const {
-        tracker,
-        subject,
-        description,
-        status,
-        priority,
-        assignee,
-        startdate,
-        duedate,
-        estimatedtime,
-        done,
-      } = req.body;
-      const manyFiles = []
-      if(!req.files){
-        if (status == "Closed") {
-           return db.query(
-            "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, author = $11, closeddate = now() where issueid = $12",
+      const manyFiles1 = [];
+     
+      if (!req.files && !req.body.fileDb) {
+        if (req.body.status == "Closed") {
+          return db.query(
+            "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, author = $11, closeddate = now(), files = null where issueid = $12",
             [
               req.body.tracker,
               req.body.subject,
@@ -678,15 +688,13 @@ module.exports = function (db) {
               req.session.user.userid,
               issueid,
             ],
-            (err) => {
-              
+            (err, edit) => {
               res.redirect(`/projects/issues/${projectid}`);
-              
             }
           );
         } else {
-           return db.query(
-            "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, author = $11, updateddate = now() where issueid = $12",
+          return db.query(
+            "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, author = $11, updateddate = now(), files = null where issueid = $12",
             [
               req.body.tracker,
               req.body.subject,
@@ -701,85 +709,100 @@ module.exports = function (db) {
               req.session.user.userid,
               issueid,
             ],
-            (err) => {
+            (err, edit) => {
+              res.redirect(`/projects/issues/${projectid}`);
+            });
+        }
+      } else if (req.files.files.length > 1) {
+        req.files.files.forEach((item) => {
+          let fileName = `${Date.now()}|${item.name}`;
+          let uploadPath = path.join(
+            __dirname,
+            "..",
+            "public",
+            "uploaded",
+            fileName
+          );
+          manyFiles1.push({ name: fileName, type: item.mimetype });
+          item.mv(uploadPath, (err) => {
+            if (err) {
+              throw err;
+            }
+          });
+        });
+      } else if (req.files.files) {
+        let fileName = `${Date.now()}|${req.files.files.name}`;
+        let uploadPath = path.join(
+          __dirname,
+          "..",
+          "public",
+          "uploaded",
+          fileName
+        );
+        manyFiles1.push({ name: fileName, type: req.files.files.mimetype });
+        req.files.files.mv(uploadPath, (err) => {
+          if (err) {
+            throw err;
+          }
+        });
+      }
+      if (req.files.files) {
+        if (req.body.status == "Closed") {
+          db.query(
+            "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11, author = $12, closeddate = now() where issueid = $13",
+            [
+              req.body.tracker,
+              req.body.subject,
+              req.body.description,
+              req.body.status,
+              req.body.priority,
+              req.body.assignee,
+              req.body.startdate,
+              req.body.duedate,
+              req.body.estimatedtime,
+              req.body.done,
+              manyFiles1,
+              req.session.user.userid,
+              issueid,
+            ],
+            (err, edit) => {
+              res.redirect(`/projects/issues/${projectid}`);
+            }
+          );
+        } else {
+          db.query(
+            "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11, author = $12, updateddate = now() where issueid = $13",
+            [
+              req.body.tracker,
+              req.body.subject,
+              req.body.description,
+              req.body.status,
+              req.body.priority,
+              req.body.assignee,
+              req.body.startdate,
+              req.body.duedate,
+              req.body.estimatedtime,
+              req.body.done,
+              manyFiles1,
+              req.session.user.userid,
+              issueid,
+            ],
+            (err, edit) => {
               res.redirect(`/projects/issues/${projectid}`);
             }
           );
         }
       }
-      else if(req.files.files.length > 1){
-        req.files.files.forEach(item => {
-          let fileName = `${Date.now()}|${item.name}`
-          let uploadPath = path.join(__dirname, '..', 'public', 'uploaded', fileName)
-          item.mv(uploadPath, (err) => {
-            if (err) {
-              throw err;
-            }
-              manyFiles.push({name: fileName, type: item.mimetype})
-          });
-        })
-      }
-      else if(req.files.files){
-        let fileName = `${Date.now()}|${req.files.files.name}`
-        let uploadPath = path.join(__dirname, '..', 'public', 'uploaded', fileName)
-        req.files.files.mv(uploadPath, (err) => {
-          if(err){
-            throw err
-          }
-            manyFiles.push({name: fileName, type: req.files.files.mimetype})
-        })
-      }
-      console.log(manyFiles)
-      
-      if(req.files.files){
-      if (status == "Closed") {
-         db.query(
-          "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11, author = $12, closeddate = now() where issueid = $13",
-          [
-            req.body.tracker,
-            req.body.subject,
-            req.body.description,
-            req.body.status,
-            req.body.priority,
-            req.body.assignee,
-            req.body.startdate,
-            req.body.duedate,
-            req.body.estimatedtime,
-            req.body.done,
-            manyFiles,
-            req.session.user.userid,
-            issueid,
-          ],
-          (err) => {
-            
-            res.redirect(`/projects/issues/${projectid}`);
-            
-          }
-        );
-      } else {
-         db.query(
-          "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11, author = $12, updateddate = now() where issueid = $13",
-          [
-            req.body.tracker,
-            req.body.subject,
-            req.body.description,
-            req.body.status,
-            req.body.priority,
-            req.body.assignee,
-            req.body.startdate,
-            req.body.duedate,
-            req.body.estimatedtime,
-            req.body.done,
-            manyFiles,
-            req.session.user.userid,
-            issueid,
-          ],
-          (err) => {
-            res.redirect(`/projects/issues/${projectid}`);
-          }
-        );
-      }
-     }
+      //  if (!req.body.fileDb) {
+      //   manyFiles1.length = 0;
+      // } else 
+      // if (req.body.fileDb.length > 1) {
+      //   req.body.fileDb.forEach((item) => {
+      //     manyFiles1.push({ name: item });
+      //   });
+      // } else if (req.body.fileDb) {
+      //   manyFiles1.push({ name: req.body.fileDb });
+      // }
     }
   );
 
@@ -794,5 +817,17 @@ module.exports = function (db) {
       });
     }
   );
+
+  router.get("/activity/:projectid", (req, res) => {
+    const projectid = req.params.projectid;
+    const nameSidebar = "activity";
+
+    db.query("select * from activity");
+    res.render("../views/projects/project-details/activity/lists", {
+      projectid,
+      nameSidebar,
+      namePage,
+    });
+  });
   return router;
 };

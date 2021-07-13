@@ -235,6 +235,7 @@ include('../../../components/navbar') %>
             <div class="row">
               <table class="table-striped col-sm-6">
                 <tr>
+                  <th>Image</th>
                   <th>File</th>
                 </tr>
                 <tr>
@@ -242,9 +243,23 @@ include('../../../components/navbar') %>
                     <% if(data.files){ %> 
                     <ul>
                       <% data.files.forEach(file => { %> 
-                      <li><img src="<%= file ? `${baseUrl}/uploaded/${file.name}` : '' %>" alt="a" width="100"></li>
+                      <li class="mb-4" id="list-image">
+                        <a href="<%= file ? `${baseUrl}/uploaded/${file.name}` : '' %>" target="_blank">
+                          <img src="<%= file ? `${baseUrl}/uploaded/${file.name}` : '' %>" alt="a" width="100">
+                        </a>
+                       
+                          <input type="hidden" value="<%= file.name %>" name="fileDb">
+                         
+                        <button type="button" class="btn btn-danger btn-minus-file"><i class="fas fa-minus"></i></button>
+                      </li>
+                      <% })} %> 
+                      
                     </ul>
-                    <% })} %> 
+                  </td>
+                  <td>
+                    <ul>
+                      <li><a href="#">1</a></li>
+                    </ul>
                   </td>
                 </tr>
               </table>
@@ -261,12 +276,15 @@ include('../../../components/navbar') %>
     $('.card').on( "click", ".btn-delete", function() { 
        $(this).closest(".row-add").remove();
     });
+    $('.card').on( "click", ".btn-minus-file", function() { 
+       $(this).closest("#list-image").remove();
+    });
   })
       var input = `  <div class="row-add form-group">
                       <div class="row mb-4">
                         <label class="control-label col-sm-2"></label>
                         <input type="file" name="files" class="form-control col-sm-3" placeholder="Subject" required />
-                        <button type="button" class="btn btn-primary btn-plus-styling ml-4 btn-delete"><i class="fas fa-minus"></i></button>
+                        <button type="button" class="btn btn-danger btn-plus-styling ml-4 btn-delete"><i class="fas fa-minus"></i></button>
                        </div>
                     </div>`
                     
