@@ -123,7 +123,9 @@
             <% } %> 
             <td>
               <a href="/projects/members/<%= projectid %>/edit/<%= item.userid %>" class="btn btn-success">Edit</a>
+               <% if(session.role == 'ADMIN'){ %> 
               <a href="/projects/members/<%= projectid %>/delete/<%= item.userid %>" class="btn btn-danger">Delete</a>
+              <% } %> 
             </td>
           </tr>
           <% }) %> 

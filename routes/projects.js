@@ -203,7 +203,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/delete/:id", helpers.isLoggedIn, (req, res) => {
+  router.get("/delete/:id", helpers.isLoggedIn, helpers.isAdmin, (req, res) => {
     let projectid = parseInt(req.params.id);
     db.query("delete from members where projectid = $1", [projectid], (err) => {
       db.query(
@@ -480,7 +480,7 @@ module.exports = function (db) {
 
   router.get(
     "/members/:projectid/delete/:userid",
-    helpers.isLoggedIn,
+    helpers.isLoggedIn, helpers.isAdmin,
     (req, res) => {
       const { projectid, userid } = req.params;
 
@@ -524,7 +524,7 @@ module.exports = function (db) {
       sql = `select * from issues where projectid = ${projectid} and `;
       sqlCount = `select count(*) as total from issues where projectid = ${projectid} and `;
 
-      sql += ` ${params.join(" and ")} order by issueid`;
+      sql += ` ${params.join(" and ")} order by issueid limit 2 offset ${offset}`;
       sqlCount += ` ${params.join(" and ")}`;
     }
 
@@ -983,7 +983,7 @@ module.exports = function (db) {
 
   router.get(
     "/issues/:projectid/delete/:issueid",
-    helpers.isLoggedIn,
+    helpers.isLoggedIn, helpers.isAdmin,
     (req, res) => {
       const { projectid, issueid } = req.params;
       db.query("delete from activity where issueid = $1", [issueid], (err) => {

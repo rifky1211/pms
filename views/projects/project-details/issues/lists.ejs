@@ -159,9 +159,10 @@
               <% } %> 
             <td>
               <a href="/projects/issues/<%= projectid %>/edit/<%= item.issueid %>" class="btn btn-success<%= item.status == 'Closed' ? ' disabled' : '' %>">Edit</a>
+              <% if(session.role == 'ADMIN'){ %> 
               
               <a href="/projects/issues/<%= projectid %>/delete/<%= item.issueid %>" class="btn btn-danger">Delete</a>
-              
+              <% } %> 
             </td>
           </tr>
           <% }) %> 

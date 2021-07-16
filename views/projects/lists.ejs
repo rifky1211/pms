@@ -127,7 +127,9 @@
       <% } %>
       <td>
         <a href="/projects/edit/<%= item.projectid %>" class="btn btn-success">Edit</a>
+        <% if(session.role == 'ADMIN'){ %> 
         <a href="/projects/delete/<%= item.projectid %>" class="btn btn-danger">Delete</a>
+        <% } %> 
       </td>
     </tr>
     <% }) %>

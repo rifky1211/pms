@@ -15,6 +15,8 @@
       type="checkbox"
       id="checkId"
       onclick="check()"
+      <%= findId ? ' checked' : '' %> 
+
     />
     <label class="control-label col-sm-2" for="1">ID :</label>
     <div class="col-sm-4">
@@ -23,13 +25,13 @@
         class="form-control"
         name="findId"
         id="findId"
-        value="1"
-        
+        value="<%= findId %>"
+        <%= findId ? '' : ' disabled' %> 
       />
     </div>
   </div>
   <div class="form-group">
-    <input type="checkbox" id="checkName" onclick="check()" />
+    <input type="checkbox" id="checkName" onclick="check()" <%= findName ? ' checked' : '' %>/>
     <label class="control-label col-sm-2" for="integer">Name :</label>
     <div class="col-sm-4">
       <input
@@ -37,17 +39,20 @@
         class="form-control"
         name="findName"
         id="findName"
-        value="1"
+        value="<%= findName %>"
+        <%= findName ? '' : ' disabled' %> 
       />
     </div>
   </div>
   <div class="form-group">
-    <input type="checkbox" id="checkMembers" onclick="check()"/>
-    <label for="member" class="control-label col-sm-2">Member :</label>
+    <input type="checkbox" id="checkMembers" onclick="check()" <%= findPosition ? ' checked' : '' %>/>
+    <label for="member" class="control-label col-sm-2">Position :</label>
     <div class="col-sm-2">
-      <select name="findPosition" id="findPosition" class="custom-select col-sm-10" >
+      <select name="findPosition" id="findPosition" class="custom-select col-sm-10" <%= findPosition ? '' : ' disabled' %>>
         <option value="">Find Position ...</option>
-        <option value=""></option>
+        <option value="Programmer"<%= findPosition == 'Programmer'  ? ' selected' : '' %>>Programmer</option>
+        <option value="Manager"<%= findPosition == 'Manager'  ? ' selected' : '' %>>Manager</option>
+        <option value="Quality Assurance"<%= findPosition == 'Quality Assurance'  ? ' selected' : '' %>>Quality Assurance</option>
       </select>
     </div>
   </div>
@@ -67,9 +72,12 @@
     <div class="p-2">Columns</div>
     <div class="p-2 option-checkbox">
       <div class="custom-control custom-checkbox">
-        <input name="projectid" type="checkbox" class="custom-control-input"
-        id="id-option"/>
-        <label class="custom-control-label" for="id-option">ID</label>
+        <input name="userid" type="checkbox" class="custom-control-input"
+        id="userid-option" 
+        <%= options["userid"] ? ' checked' : '' %>
+        />
+        
+        <label class="custom-control-label" for="userid-option">ID</label>
       </div>
       <div class="custom-control custom-checkbox">
         <input
@@ -77,17 +85,20 @@
           type="checkbox"
           class="custom-control-input"
           id="name-option"
+        <%= options["name"] ? ' checked' : '' %>
+
         />
         <label class="custom-control-label" for="name-option">Name</label>
       </div>
       <div class="custom-control custom-checkbox">
         <input
-          name="members"
+          name="position"
           type="checkbox"
           class="custom-control-input"
-          id="members-option"
+          id="position-option"
+        <%= options["position"] ? ' checked' : '' %>
         />
-        <label class="custom-control-label" for="members-option">Members</label>
+        <label class="custom-control-label" for="position-option">Position</label>
       </div>
     </div>
   </div>
@@ -97,19 +108,29 @@
 <div class="table-data">
   <table class="table table-striped">
     <tr>
+      <% if(options["userid"]){ %> 
       <th class="id-data">#</th>
+      <% } %> 
+      <% if(options["name"]){ %> 
       <th class="name-head">Name</th>
+      <% } %> 
+      <% if(options["position"]){ %> 
       <th class="member-head">Position</th>
+      <% } %> 
 
       <th>Action</th>
     </tr>
     <% data.forEach(item => { %> 
     <tr>
-      <td class="id-data">
-        <%= item.userid %> 
-      </td>
+      <% if(options["userid"]){ %> 
+      <td class="id-data"><%= item.userid %></td>
+      <% } %> 
+      <% if(options["name"]){ %> 
       <td class="name-data"><%= item.firstname %> <%= item.lastname %></td>
+      <% } %> 
+      <% if(options["position"]){ %> 
       <td class="member-data"><%= item.position %></td>
+      <% } %> 
       <td>
         <a href="/users/edit/<%= item.userid %>" class="btn btn-success">Edit</a>
         <a href="/projects/delete/" class="btn btn-danger">Delete</a>
@@ -123,7 +144,21 @@
     <a href="/users/add" class="btn btn-primary">Add</a>
   </div>
   
-
+  <div class="justify-content-center">
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        <li class="page-item <%= page > 1 ? '' : 'disabled' %> ">
+          <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${page - 1}`)%>">Previous</a>
+        </li>
+        <% for(let i = 1; i <= jumlahHalaman; i++){ %> 
+        <li class="page-item <%= page == i ? 'active' : '' %> "><a class="page-link" href="<%= url.replace(`page=${page}`, `page=${i}`) %>"><%= i %> </a></li>
+        <% } %> 
+        <li class="page-item <%= page < jumlahHalaman ? '' : 'disabled' %> ">
+          <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${page + 1}`)%>">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
 
 
 <script>

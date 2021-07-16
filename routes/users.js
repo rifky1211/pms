@@ -9,18 +9,62 @@ var moment = require("moment");
 
 module.exports = function(db){
   const namePage = 'users'
+ 
+
 router.get('/',helpers.isLoggedIn, helpers.isAdmin, function(req, res, next) {
-  db.query('select * from users where not userid = $1 order by userid', [req.session.user.userid], (err, data) => {
-    res.render("../views/users/lists", {namePage, session: req.session.user, data: data.rows})
+  const { findId, findName, findPosition } = req.query;
+  const url = req.url == "/" ? "/users/?page=1" : `/users${req.url}`;
+  var page = parseInt(req.query.page) || 1;
+    var size = 2;
+    var offset = (page - 1) * size;
+    let params = [];
+
+    if(findId){
+      params.push(` userid = '${findId}'`)
+    }
+    if(findName){
+      params.push(` firstname ilike '%${findName}%'`)
+    }
+    if(findPosition){
+      params.push(` position = '${findPosition}'`)
+    }
+
+    let sql = `select * from users order by userid limit ${size} offset ${offset}`
+    let sqlCount = `select count(*) as total from users`
+
+    if(params.length > 0){
+      sql = `select * from users where `
+      sqlCount = `select count(*) as total from users where `
+
+      sql += ` ${params.join(" and ")} order by userid limit 2 offset ${offset}`
+      sqlCount += ` ${params.join(" and ")}`
+    }
+db.query(sqlCount, (err, count) => {
+  let jumlahData = count.rows[0].total;
+      let jumlahHalaman = Math.ceil(jumlahData / 2);
+  db.query(sql, (err, data) => {
+    db.query('select optionsuser from users where userid = $1', [req.session.user.userid], (err, options) => {
+      res.render("../views/users/lists", {namePage, session: req.session.user, data: data.rows, options: options.rows[0].optionsuser, jumlahHalaman, page, url, findId, findName, findPosition})
+    })
   })
+})
 });
+
+router.post('/', (req, res) => {
+  const { userid, name, position } = req.body
+
+  db.query('update users set optionsuser = $1 where userid = $2', [req.body, req.session.user.userid], (err) => {
+    if(err) throw err
+    res.redirect('/users')
+  })
+})
 
 router.get('/add', helpers.isLoggedIn, helpers.isAdmin, (req, res) => {
   res.render("../views/users/add", {namePage, session: req.session.user})
 })
 router.post('/add', helpers.isLoggedIn, helpers.isAdmin, (req, res) => {
   bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
-    db.query("insert into users(email, password, firstname, lastname, options, optionsmember, optionsissue, optionsuser, isfulltime, isparttime) values($1, $2, $3, $4, '{}', '{}', '{}', '{}', false, false)", [req.body.email, hash, req.body.firstname, req.body.lastname], (err) => {
+    db.query("insert into users(email, password, firstname, lastname, position, options, optionsmember, optionsissue, optionsuser, isfulltime, isparttime) values($1, $2, $3, $4, $5, '{}', '{}', '{}', '{}', false, false)", [req.body.email, hash, req.body.firstname, req.body.lastname, req.body.position], (err) => {
       if(err) throw err
       res.redirect('/users')
     })
