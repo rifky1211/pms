@@ -1,0 +1,45 @@
+<%- include('../partials/header') %> <%- include('../components/navbar') %>
+<div class="header-style">
+  <h1>Add User</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form action="" class="form-horizontal" method="POST">
+            <div class="form-group mb-4">
+              <div class="row">
+                <label for="email" class="control-label col-sm-2">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  class="form-control col-sm-2"
+                  placeholder="Email"
+                  required
+                />
+              </div>
+            </div>
+            <div class="form-group mb-4">
+                <div class="row">
+                    <label for="password" class="control-label col-sm-2">Password</label>
+                    <input type="password" class="form-control col-sm-2" name="password" id="password" placeholder="Password" required>
+                </div>
+            </div>
+            <div class="form-group mb-4">
+                <div class="row">
+                    <label for="firstname" class="control-label col-sm-2">Firstname</label>
+                    <input type="text" name="firstname" id="firstname" class="form-control col-sm-2" placeholder="Firstname" required>
+                </div>
+            </div>
+            <div class="form-group mb-4">
+              <div class="row">
+                  <label for="lastname" class="control-label col-sm-2">Lastname</label>
+                  <input type="text" name="lastname" id="lastname" class="form-control col-sm-2" placeholder="Lastname" required>
+              </div>
+          </div>
+          <button type="submit" class="btn btn-primary mt-4">Add</button>
+          </form>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

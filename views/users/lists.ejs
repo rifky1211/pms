@@ -1,0 +1,153 @@
+<%- include('../partials/header') %>
+<%- include('../components/navbar') %> 
+
+<div class="header-style">
+  <h1>Users</h1>
+</div>
+<div class="filter-style">
+  <h3>Filter</h3>
+</div>
+<form class="form-horizontal" action="" method="get">
+  <input type="hidden" name="page" value="1" />
+
+  <div class="form-group">
+    <input
+      type="checkbox"
+      id="checkId"
+      onclick="check()"
+    />
+    <label class="control-label col-sm-2" for="1">ID :</label>
+    <div class="col-sm-4">
+      <input
+        type="number"
+        class="form-control"
+        name="findId"
+        id="findId"
+        value="1"
+        
+      />
+    </div>
+  </div>
+  <div class="form-group">
+    <input type="checkbox" id="checkName" onclick="check()" />
+    <label class="control-label col-sm-2" for="integer">Name :</label>
+    <div class="col-sm-4">
+      <input
+        type="text"
+        class="form-control"
+        name="findName"
+        id="findName"
+        value="1"
+      />
+    </div>
+  </div>
+  <div class="form-group">
+    <input type="checkbox" id="checkMembers" onclick="check()"/>
+    <label for="member" class="control-label col-sm-2">Member :</label>
+    <div class="col-sm-2">
+      <select name="findPosition" id="findPosition" class="custom-select col-sm-10" >
+        <option value="">Find Position ...</option>
+        <option value=""></option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-primary btn-search">Find</button>
+      <a href="/projects" class="btn btn-warning btn-reset">Reset</a>
+    </div>
+  </div>
+</form>
+
+<form action="" class="form-horizontal" method="post">
+  <div class="options">
+    <h3>Options</h3>
+  </div>
+  <div class="d-flex">
+    <div class="p-2">Columns</div>
+    <div class="p-2 option-checkbox">
+      <div class="custom-control custom-checkbox">
+        <input name="projectid" type="checkbox" class="custom-control-input"
+        id="id-option"/>
+        <label class="custom-control-label" for="id-option">ID</label>
+      </div>
+      <div class="custom-control custom-checkbox">
+        <input
+          name="name"
+          type="checkbox"
+          class="custom-control-input"
+          id="name-option"
+        />
+        <label class="custom-control-label" for="name-option">Name</label>
+      </div>
+      <div class="custom-control custom-checkbox">
+        <input
+          name="members"
+          type="checkbox"
+          class="custom-control-input"
+          id="members-option"
+        />
+        <label class="custom-control-label" for="members-option">Members</label>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-primary" type="submit">Apply</button>
+</form>
+
+<div class="table-data">
+  <table class="table table-striped">
+    <tr>
+      <th class="id-data">#</th>
+      <th class="name-head">Name</th>
+      <th class="member-head">Position</th>
+
+      <th>Action</th>
+    </tr>
+    <% data.forEach(item => { %> 
+    <tr>
+      <td class="id-data">
+        <%= item.userid %> 
+      </td>
+      <td class="name-data"><%= item.firstname %> <%= item.lastname %></td>
+      <td class="member-data"><%= item.position %></td>
+      <td>
+        <a href="/users/edit/<%= item.userid %>" class="btn btn-success">Edit</a>
+        <a href="/projects/delete/" class="btn btn-danger">Delete</a>
+      </td>
+    </tr>
+    <% }) %> 
+  </table>
+</div>
+
+  <div>
+    <a href="/users/add" class="btn btn-primary">Add</a>
+  </div>
+  
+
+
+
+<script>
+  function check(){
+    const checkId = document.getElementById("checkId")
+    const checkName = document.getElementById("checkName")
+    const checkMembers = document.getElementById("checkMembers")
+
+    if(checkId.checked == true){
+      document.getElementById("findId").disabled = false
+    }else {
+      document.getElementById("findId").disabled = true
+    }
+    if(checkName.checked == true){
+      document.getElementById("findName").disabled = false
+    }else {
+      document.getElementById("findName").disabled = true
+    }
+    if(checkMembers.checked == true){
+      document.getElementById("findPosition").disabled = false
+    }else{
+      document.getElementById("findPosition").disabled = true
+      
+    }
+  }
+</script>
+<%- include('../partials/footer') %>

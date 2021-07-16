@@ -158,8 +158,10 @@
                 <span class="badge badge-danger"><%= item.priority %></span></td>
               <% } %> 
             <td>
-              <a href="/projects/issues/<%= projectid %>/edit/<%= item.issueid %>" class="btn btn-success">Edit</a>
+              <a href="/projects/issues/<%= projectid %>/edit/<%= item.issueid %>" class="btn btn-success<%= item.status == 'Closed' ? ' disabled' : '' %>">Edit</a>
+              
               <a href="/projects/issues/<%= projectid %>/delete/<%= item.issueid %>" class="btn btn-danger">Delete</a>
+              
             </td>
           </tr>
           <% }) %> 

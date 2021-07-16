@@ -9,7 +9,6 @@ module.exports = function (db) {
   const namePage = 'profile'
   router.get("/", helpers.isLoggedIn, (req, res) => {
     const url = req.url == "/" ? "/profile" : `/profile${req.url}`;
-    console.log(url)
     db.query(
       "select * from users where email = $1",
       [req.session.user.email],
@@ -21,7 +20,8 @@ module.exports = function (db) {
           email: req.session.user.email,
           data: data.rows[0],
           success: req.flash('success'),
-          namePage
+          namePage,
+          session: req.session.user
         });
       }
     );
@@ -49,7 +49,7 @@ module.exports = function (db) {
   });
 
   router.get("/change-password", helpers.isLoggedIn, (req, res) => {
-    res.render("../views/profile/change-password", {error: req.flash("error"), namePage});
+    res.render("../views/profile/change-password", {error: req.flash("error"), namePage, session: req.session.user});
   });
 
   router.post("/change-password", helpers.isLoggedIn, (req, res) => {

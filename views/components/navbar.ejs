@@ -21,7 +21,14 @@
       <li class="nav-item mx-2<%= namePage == 'profile' ? ' active' : '' %>">
         <a class="nav-link" href="/profile">Profile</a>
       </li>
+      <% if(session.role == 'ADMIN'){ %> 
+      <li class="nav-item mx-2<%= namePage == 'users' ? ' active' : '' %>">
+        <a class="nav-link" href="/users">Users</a>
+      </li>
+      <% } %> 
     </ul> 
-      <a href="/logout" class="btn btn-outline-success my-2 my-sm-0">Sign Out</a>
   </div>
+
+    <a href="/logout" class="btn btn-outline-success my-2 my-sm-0">Sign Out</a>
+  
 </nav>

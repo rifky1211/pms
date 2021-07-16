@@ -25,11 +25,18 @@
       <div class="card">
         <div class="card-body">
           <p>Activity</p>
-          <p>From 08/16/2017 to 08/22/2019</p>
-          <p>Today</p>
-          <ul>
-            <li>1</li>
+          <p><%= `From ${moment(from).format("MM/DD/YYYY")} to ${moment(now).format("MM/DD/YYYY")}` %></p>
+          <% for(const dayName in result){ %> 
+            <p><%= dayName == moment(new Date()).format("dddd") ? 'Today' : dayName %> </p>
+            <ul>
+              <% result[dayName].data.forEach(item => { %> 
+            <li><%= moment(item.time).format("HH:mm") %> <%= item.title %> #<%= item.issueid %> (<%= item.description %>): Description, author: <%= item.firstname %> </li>
+            <% }) %> 
           </ul>
+          <% } %> 
+            
+         
+          
         </div>
       </div>
     </main>

@@ -243,22 +243,35 @@ include('../../../components/navbar') %>
                     <% if(data.files){ %> 
                     <ul>
                       <% data.files.forEach(file => { %> 
+                        <% if(file.type == "image/png"){ %> 
                       <li class="mb-4" id="list-image">
                         <a href="<%= file ? `${baseUrl}/uploaded/${file.name}` : '' %>" target="_blank">
                           <img src="<%= file ? `${baseUrl}/uploaded/${file.name}` : '' %>" alt="a" width="100">
                         </a>
                        
                           <input type="hidden" value="<%= file.name %>" name="fileDb">
+                          <input type="hidden" value="<%= file.type %>" name="typeDb">
                          
                         <button type="button" class="btn btn-danger btn-minus-file"><i class="fas fa-minus"></i></button>
                       </li>
-                      <% })} %> 
+                      <% }})} %> 
                       
                     </ul>
                   </td>
                   <td>
+                    <% if(data.files){ %> 
                     <ul>
-                      <li><a href="#">1</a></li>
+                      <% data.files.forEach(file => { %> 
+                        <% if(file.type !== "image/png" ){ %> 
+                      <li class="list-image">
+                        <a target="_blank" href="<%= file ? `${baseUrl}/uploaded/${file.name}` : '' %>"><%= file.name %></a>
+                        <input type="hidden" value="<%= file.name %>" name="fileDb">
+                        <input type="hidden" value="<%= file.type %>" name="typeDb">
+                         
+                        <button type="button" class="btn btn-danger btn-minus-file"><i class="fas fa-minus"></i></button>
+                      </li>
+                      <% }})} %> 
+                        
                     </ul>
                   </td>
                 </tr>
@@ -278,6 +291,9 @@ include('../../../components/navbar') %>
     });
     $('.card').on( "click", ".btn-minus-file", function() { 
        $(this).closest("#list-image").remove();
+    });
+    $('.card').on( "click", ".btn-minus-file", function() { 
+       $(this).closest(".list-image").remove();
     });
   })
       var input = `  <div class="row-add form-group">

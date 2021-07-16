@@ -6,6 +6,7 @@ const saltRounds = 10;
 var path = require("path");
 const helpers = require("../helpers/util");
 var moment = require("moment");
+const { type } = require("os");
 
 module.exports = function (db) {
   const namePage = "projects";
@@ -78,6 +79,7 @@ module.exports = function (db) {
                 page,
                 url,
                 namePage,
+                session: req.session.user
               });
             });
           }
@@ -106,6 +108,7 @@ module.exports = function (db) {
       res.render("../views/projects/form", {
         users: users.rows,
         namePage,
+        session: req.session.user
       });
     });
   });
@@ -165,6 +168,7 @@ module.exports = function (db) {
                   name: name.rows,
                   count: count.rows,
                   namePage,
+                  session: req.session.user
                 });
               }
             );
@@ -240,12 +244,66 @@ module.exports = function (db) {
         db.query(
           `select * from users where firstname in(${name1})`,
           (err, data) => {
-            res.render("../views/projects/project-details/overview/overview", {
-              namePage,
-              data: data.rows,
-              nameSidebar,
-              projectid,
-            });
+            db.query(
+              "select count(*) as total from issues where tracker = 'Bug' and projectid = $1",
+              [projectid],
+              (err, totalBug) => {
+                let totalBug1 = totalBug.rows[0].total;
+                db.query(
+                  "select count(*) as total from issues where tracker = 'Bug' and projectid = $1 and not status ='Closed'",
+                  [projectid],
+                  (err, uncompletedBug) => {
+                    let uncompletedBug1 = uncompletedBug.rows[0].total;
+                    db.query(
+                      "select count(*) as total from issues where tracker = 'Feature' and projectid = $1",
+                      [projectid],
+                      (err, totalFeature) => {
+                        let totalFeature1 = totalFeature.rows[0].total;
+                        db.query(
+                          "select count(*) as total from issues where tracker = 'Feature' and projectid = $1 and not status ='Closed'",
+                          [projectid],
+                          (err, uncompletedFeature) => {
+                            let uncompletedFeature1 =
+                              uncompletedFeature.rows[0].total;
+                            db.query(
+                              "select count(*) as total from issues where tracker = 'Support' and projectid = $1",
+                              [projectid],
+                              (err, totalSupport) => {
+                                let totalSupport1 = totalSupport.rows[0].total;
+                                db.query(
+                                  "select count(*) as total from issues where tracker = 'Support' and projectid = $1 and not status ='Closed'",
+                                  [projectid],
+                                  (err, uncompletedSupport) => {
+                                    let uncompletedSupport1 =
+                                      uncompletedSupport.rows[0].total;
+                                    res.render(
+                                      "../views/projects/project-details/overview/overview",
+                                      {
+                                        namePage,
+                                        data: data.rows,
+                                        nameSidebar,
+                                        projectid,
+                                        totalBug1,
+                                        uncompletedBug1,
+                                        totalFeature1,
+                                        totalSupport1,
+                                        uncompletedFeature1,
+                                        uncompletedSupport1,
+                                        session: req.session.user
+                                      }
+                                    );
+                                  }
+                                );
+                              }
+                            );
+                          }
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+            );
           }
         );
       }
@@ -305,6 +363,7 @@ module.exports = function (db) {
               size,
               findName,
               findPosition,
+              session: req.session.user
             });
           }
         );
@@ -339,6 +398,7 @@ module.exports = function (db) {
             data: data.rows[0],
             nameSidebar,
             projectid,
+            session: req.session.user
           });
         }
       );
@@ -393,6 +453,7 @@ module.exports = function (db) {
               nameSidebar,
               namePage,
               projectid,
+              session: req.session.user
             });
           }
         );
@@ -487,6 +548,7 @@ module.exports = function (db) {
               findId,
               findSubject,
               findTracker,
+              session: req.session.user,
             });
           }
         );
@@ -520,6 +582,7 @@ module.exports = function (db) {
           nameSidebar,
           projectid,
           data: data.rows,
+          session: req.session.user
         });
       }
     );
@@ -655,6 +718,7 @@ module.exports = function (db) {
                 moment: moment,
                 baseUrl,
                 nameFiles,
+                session: req.session.user
               });
             }
           );
@@ -669,11 +733,11 @@ module.exports = function (db) {
     (req, res) => {
       const { projectid, issueid } = req.params;
       const manyFiles1 = [];
-     
+
       if (!req.files && !req.body.fileDb) {
         if (req.body.status == "Closed") {
           return db.query(
-            "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, author = $11, closeddate = now(), files = null where issueid = $12",
+            "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, author = $11, closeddate = now(), files = null where issueid = $12 returning *",
             [
               req.body.tracker,
               req.body.subject,
@@ -689,12 +753,19 @@ module.exports = function (db) {
               issueid,
             ],
             (err, edit) => {
-              res.redirect(`/projects/issues/${projectid}`);
+              let log = edit.rows[0];
+              db.query(
+                "insert into activity(time, title, description, author, issueid) values(now(), $1, $2, $3, $4)",
+                [log.subject, log.status, log.author, log.issueid],
+                (err) => {
+                  res.redirect(`/projects/issues/${projectid}`);
+                }
+              );
             }
           );
         } else {
           return db.query(
-            "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, author = $11, updateddate = now(), files = null where issueid = $12",
+            "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, author = $11, updateddate = now(), files = null where issueid = $12 returning *",
             [
               req.body.tracker,
               req.body.subject,
@@ -710,10 +781,18 @@ module.exports = function (db) {
               issueid,
             ],
             (err, edit) => {
-              res.redirect(`/projects/issues/${projectid}`);
-            });
+              let log = edit.rows[0];
+              db.query(
+                "insert into activity(time, title, description, author, issueid) values(now(), $1, $2, $3, $4)",
+                [log.subject, log.status, log.author, log.issueid],
+                (err) => {
+                  res.redirect(`/projects/issues/${projectid}`);
+                }
+              );
+            }
+          );
         }
-      } else if (req.files.files.length > 1) {
+      } else if (!req.body.fileDb && req.files.files.length > 1) {
         req.files.files.forEach((item) => {
           let fileName = `${Date.now()}|${item.name}`;
           let uploadPath = path.join(
@@ -730,7 +809,98 @@ module.exports = function (db) {
             }
           });
         });
-      } else if (req.files.files) {
+      } else if (!req.body.fileDb && req.files.files) {
+        let fileName = `${Date.now()}|${req.files.files.name}`;
+        let uploadPath = path.join(
+          __dirname,
+          "..",
+          "public",
+          "uploaded",
+          fileName
+        );
+        manyFiles1.push({ name: fileName, type: req.files.files.mimetype });
+        req.files.files.mv(uploadPath, (err) => {
+          if (err) {
+            throw err;
+          }
+        });
+      } else if (typeof req.body.fileDb == "object" && !req.files) {
+        for (let i = 0; i < req.body.fileDb.length; i++) {
+          manyFiles1.push({
+            name: req.body.fileDb[i],
+            type: req.body.typeDb[i],
+          });
+        }
+      } else if (typeof req.body.fileDb == "string" && !req.files) {
+        manyFiles1.push({ name: req.body.fileDb, type: req.body.typeDb });
+      } else if (
+        typeof req.body.fileDb == "object" &&
+        req.files.files.length > 1
+      ) {
+        for (let i = 0; i < req.body.fileDb.length; i++) {
+          manyFiles1.push({
+            name: req.body.fileDb[i],
+            type: req.body.typeDb[i],
+          });
+        }
+        req.files.files.forEach((item) => {
+          let fileName = `${Date.now()}|${item.name}`;
+          let uploadPath = path.join(
+            __dirname,
+            "..",
+            "public",
+            "uploaded",
+            fileName
+          );
+          manyFiles1.push({ name: fileName, type: item.mimetype });
+          item.mv(uploadPath, (err) => {
+            if (err) {
+              throw err;
+            }
+          });
+        });
+      } else if (req.body.fileDb && req.files.files.length > 1) {
+        manyFiles1.push({ name: req.body.fileDb, type: req.body.typeDb });
+        req.files.files.forEach((item) => {
+          let fileName = `${Date.now()}|${item.name}`;
+          let uploadPath = path.join(
+            __dirname,
+            "..",
+            "public",
+            "uploaded",
+            fileName
+          );
+          manyFiles1.push({ name: fileName, type: item.mimetype });
+          item.mv(uploadPath, (err) => {
+            if (err) {
+              throw err;
+            }
+          });
+        });
+      } else if (typeof req.body.fileDb == "object" && req.files.files) {
+        for (let i = 0; i < req.body.fileDb.length; i++) {
+          manyFiles1.push({
+            name: req.body.fileDb[i],
+            type: req.body.typeDb[i],
+          });
+        }
+
+        let fileName = `${Date.now()}|${req.files.files.name}`;
+        let uploadPath = path.join(
+          __dirname,
+          "..",
+          "public",
+          "uploaded",
+          fileName
+        );
+        manyFiles1.push({ name: fileName, type: req.files.files.mimetype });
+        req.files.files.mv(uploadPath, (err) => {
+          if (err) {
+            throw err;
+          }
+        });
+      } else if (req.body.fileDb && req.files.files) {
+        manyFiles1.push({ name: req.body.fileDb, type: req.body.typeDb });
         let fileName = `${Date.now()}|${req.files.files.name}`;
         let uploadPath = path.join(
           __dirname,
@@ -746,10 +916,11 @@ module.exports = function (db) {
           }
         });
       }
-      if (req.files.files) {
+
+      if (req.body.fileDb || req.files.files) {
         if (req.body.status == "Closed") {
           db.query(
-            "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11, author = $12, closeddate = now() where issueid = $13",
+            "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11, author = $12, closeddate = now() where issueid = $13 returning *",
             [
               req.body.tracker,
               req.body.subject,
@@ -766,12 +937,19 @@ module.exports = function (db) {
               issueid,
             ],
             (err, edit) => {
-              res.redirect(`/projects/issues/${projectid}`);
+              let log = edit.rows[0];
+              db.query(
+                "insert into activity(time, title, description, author, issueid) values(now(), $1, $2, $3, $4)",
+                [log.subject, log.status, log.author, log.issueid],
+                (err) => {
+                  res.redirect(`/projects/issues/${projectid}`);
+                }
+              );
             }
           );
         } else {
           db.query(
-            "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11, author = $12, updateddate = now() where issueid = $13",
+            "update issues set tracker = $1, subject = $2, description = $3, status = $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11, author = $12, updateddate = now() where issueid = $13 returning *",
             [
               req.body.tracker,
               req.body.subject,
@@ -788,21 +966,18 @@ module.exports = function (db) {
               issueid,
             ],
             (err, edit) => {
-              res.redirect(`/projects/issues/${projectid}`);
+              let log = edit.rows[0];
+              db.query(
+                "insert into activity(time, title, description, author, issueid) values(now(), $1, $2, $3, $4)",
+                [log.subject, log.status, log.author, log.issueid],
+                (err) => {
+                  res.redirect(`/projects/issues/${projectid}`);
+                }
+              );
             }
           );
         }
       }
-      //  if (!req.body.fileDb) {
-      //   manyFiles1.length = 0;
-      // } else 
-      // if (req.body.fileDb.length > 1) {
-      //   req.body.fileDb.forEach((item) => {
-      //     manyFiles1.push({ name: item });
-      //   });
-      // } else if (req.body.fileDb) {
-      //   manyFiles1.push({ name: req.body.fileDb });
-      // }
     }
   );
 
@@ -811,23 +986,53 @@ module.exports = function (db) {
     helpers.isLoggedIn,
     (req, res) => {
       const { projectid, issueid } = req.params;
-      db.query("delete from issues where issueid = $1", [issueid], (err) => {
-        if (err) throw err;
-        res.redirect(`/projects/issues/${projectid}`);
+      db.query("delete from activity where issueid = $1", [issueid], (err) => {
+        db.query("delete from issues where issueid = $1", [issueid], (err) => {
+          if (err) throw err;
+          res.redirect(`/projects/issues/${projectid}`);
+        });
       });
     }
   );
 
-  router.get("/activity/:projectid", (req, res) => {
+  router.get("/activity/:projectid", helpers.isLoggedIn, (req, res) => {
     const projectid = req.params.projectid;
     const nameSidebar = "activity";
 
-    db.query("select * from activity");
-    res.render("../views/projects/project-details/activity/lists", {
-      projectid,
-      nameSidebar,
-      namePage,
-    });
+    db.query(
+      "select issues.projectid, activity.time, activity.title, activity.description, activity.author, users.firstname, issues.issueid  from activity left join users on activity.author = users.userid left join issues on activity.issueid = issues.issueid where projectid = $1 and time > current_date - interval '7 days' order by activity.time desc",
+      [projectid],
+      (err, data) => {
+        let result = {};
+        data.rows.forEach((item) => {
+          if (
+            result[moment(item.time).format("dddd")] &&
+            result[moment(item.time).format("dddd")].data
+          ) {
+            result[moment(item.time).format("dddd")].data.push(item);
+          } else {
+            result[moment(item.time).format("dddd")] = {
+              date: moment(item.time).format("YYYY-MM-DD"),
+              data: [item],
+            };
+          }
+        });
+        let now = new Date();
+        let from = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+        res.render("../views/projects/project-details/activity/lists", {
+          projectid,
+          nameSidebar,
+          namePage,
+          data: data.rows,
+          moment: moment,
+          result,
+          now,
+          from,
+          session: req.session.user
+        });
+      }
+    );
   });
+
   return router;
 };

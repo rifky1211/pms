@@ -33,9 +33,9 @@ if(isDevelompent){
 }
 
 var indexRouter = require('./routes/index')(pool);
-var usersRouter = require('./routes/users');
 var projectsRouter = require('./routes/projects')(pool);
 var profileRouter = require('./routes/profile')(pool);
+var usersRouter = require('./routes/users')(pool);
 
 var app = express();
 
@@ -55,9 +55,9 @@ app.use(flash())
 app.use(fileUpload())
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/projects', projectsRouter);
 app.use('/profile', profileRouter);
+app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
