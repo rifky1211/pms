@@ -32,7 +32,6 @@ module.exports = function (db) {
           function (err, result) {
             if (result) {
               req.session.user = data.rows[0];
-
               res.redirect("/projects");
             } else {
               req.flash("info", "email or password wrong");
