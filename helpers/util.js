@@ -15,7 +15,7 @@ module.exports = {
     },
 
     isNotClosed: (req, res, next) => {
-        if(data.status !== 'Closed'){
+        if(item.status !== 'Closed'){
             next();
         }else{
             res.redirect(`/projects/issues/${projectid}`)
