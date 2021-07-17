@@ -688,7 +688,7 @@ module.exports = function (db) {
 
   router.get(
     "/issues/:projectid/edit/:issueid",
-    helpers.isLoggedIn,
+    helpers.isLoggedIn, helpers.isNotClosed,
     (req, res) => {
       const { projectid, issueid } = req.params;
       const nameSidebar = "issues";
@@ -729,7 +729,7 @@ module.exports = function (db) {
 
   router.post(
     "/issues/:projectid/edit/:issueid",
-    helpers.isLoggedIn,
+    helpers.isLoggedIn, helpers.isNotClosed,
     (req, res) => {
       const { projectid, issueid } = req.params;
       const manyFiles1 = [];

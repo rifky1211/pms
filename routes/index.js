@@ -44,22 +44,6 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/register", (req, res) => {
-    res.render("register");
-  });
-
-  router.post("/register", (req, res) => {
-    bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
-      db.query(
-        `insert into users(email, password, firstname, lastname, isfulltime, isparttime, position, role) values($1, $2, $3, $4, true, false, 'Programmer', 'ADMIN')`,
-        [req.body.email, hash, req.body.firstname, req.body.lastname],
-        (err, data) => {
-          res.redirect("/");
-        }
-      );
-    });
-  });
-
   router.get("/logout", (req, res, next) => {
     req.session.destroy(function (err) {
       res.redirect("/");
