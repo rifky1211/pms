@@ -23,7 +23,7 @@ const developmentDB = {
   port: 5432,
 }
 
-const isDevelompent = false
+const isDevelompent = true
 const { Pool } = require('pg')
 let pool = null
 if(isDevelompent){
